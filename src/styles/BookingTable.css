@@ -1,0 +1,54 @@
+.booking-table-container {
+    overflow-x: auto;
+    max-width: 100%;
+    padding: 16px;
+}
+
+.booking-table {
+    border-collapse: collapse;
+    width: 100%;
+    background: white;
+}
+
+.apartment-column {
+    position: sticky;
+    left: 0;
+    background: white;
+    z-index: 1;
+    padding: 8px 16px;
+    min-width: 150px;
+    border: 1px solid #e0e0e0;
+}
+
+.booking-cell {
+    padding: 8px 4px;
+    border: 1px solid #e0e0e0;
+    cursor: pointer;
+    user-select: none;
+    min-width: 40px;
+    text-align: center;
+    transition: background-color 0.2s ease;
+}
+
+.booking-cell:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+}
+
+.booking-cell.selected {
+    background-color: rgba(25, 118, 210, 0.1);
+    border-color: #1976d2;
+}
+
+/* Стили для выделения при перетаскивании */
+.booking-cell.selecting {
+    background-color: rgba(25, 118, 210, 0.05);
+}
+
+/* Стили для первой и последней ячейки в выборе */
+.booking-cell.selected:first-child {
+    border-left-width: 2px;
+}
+
+.booking-cell.selected:last-child {
+    border-right-width: 2px;
+}

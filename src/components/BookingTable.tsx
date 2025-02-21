@@ -1,5 +1,5 @@
 import {BookingTableHeader} from './BookingTableHeader';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import styles from '../styles/BookingTable.module.css';
 import { Selection } from '../classes/BookingTable';
 import { 
@@ -28,19 +28,21 @@ interface BookingTableProps {
 export default function BookingTable({ apartments, currentMonth, onSelectionChange }: BookingTableProps) {
     const [isSelecting, setIsSelecting] = useState(false);
     const [selection, setSelection] = useState<Selection | null>(null);
+    const tableRef = useRef<HTMLDivElement>(null);
 
-        // Начальный диапазон: текущий месяц + 2 месяца вперед и 1 назад
-        const [dateRange, setDateRange] = useState({
-            start: startOfMonth(subMonths(new Date(), 1)),
-            end: endOfMonth(addMonths(new Date(), 2))
-        });
+    // Начальный диапазон: текущий месяц + 2 месяца вперед и 1 назад
+    const [dateRange, setDateRange] = useState({
+        start: startOfMonth(subMonths(new Date(), 1)),
+        end: endOfMonth(addMonths(new Date(), 2))
+    });
 
-        const containerRef = useRef<HTMLTableElement>(null);
+    const containerRef = useRef<HTMLTableElement>(null);
     
-        const daysInRange = eachDayOfInterval({
-            start: dateRange.start,
-            end: dateRange.end
-        });
+    const daysInRange = eachDayOfInterval({
+        start: dateRange.start,
+        end: dateRange.end
+    });
+
 
             // Обработчик прокрутки
     const handleScroll = () => {
@@ -126,6 +128,19 @@ export default function BookingTable({ apartments, currentMonth, onSelectionChan
         }
     };
 
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (tableRef.current && !tableRef.current.contains(event.target as Node)) {
+                setSelection(null);
+                setIsSelecting(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
 
     return (
         <>  
@@ -145,6 +160,7 @@ export default function BookingTable({ apartments, currentMonth, onSelectionChan
     </div>
         <div 
             className={styles.bookingTableContainer}
+            ref={tableRef}
             onMouseUp={handleMouseUp}
             onMouseLeave={handleMouseUp}
         >

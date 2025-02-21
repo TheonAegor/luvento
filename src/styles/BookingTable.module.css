@@ -1,23 +1,38 @@
 .bookingTableContainer {
     overflow-x: auto;
-    max-width: 100%;
-    padding: 16px;
+    overflow-y: hidden;
+    width: 100vw; /* Ширина viewport */
+    position: relative;
+    scrollbar-width: thin;
+    margin-left: -16px; /* Компенсация padding родительского контейнера */
+    margin-right: -16px;
 }
 
 .bookingTable {
     border-collapse: collapse;
-    width: 100%;
+    table-layout: fixed;
+    width: auto;
     background: white;
+}
+
+.navigationControls {
+    position: sticky;
+    left: 150px;
+    z-index: 2;
+    background: white;
+    padding: 8px;
+    width: calc(100vw - 150px); /* Учитываем ширину фиксированной колонки */
 }
 
 .apartmentColumn {
     position: sticky;
     left: 0;
     background: white;
-    z-index: 1;
+    z-index: 2;
     padding: 8px 16px;
-    min-width: 150px;
+    width: 150px; /* Фиксированная ширина вместо min-width */
     border: 1px solid #e0e0e0;
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
 }
 
 .dateColumn {
@@ -39,11 +54,11 @@
 }
 
 .bookingCell {
+    width: 40px; /* Фиксированная ширина вместо min-width */
     padding: 8px 4px;
     border: 1px solid #e0e0e0;
     cursor: pointer;
     user-select: none;
-    min-width: 40px;
     text-align: center;
     transition: background-color 0.2s ease;
 }

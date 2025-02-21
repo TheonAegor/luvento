@@ -128,6 +128,8 @@ export default function BookingTable({ apartments, currentMonth, onSelectionChan
         }
     };
 
+    // Обработчик кликов вне таблицы
+    // Убирает выделение при клике вне таблицы
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (tableRef.current && !tableRef.current.contains(event.target as Node)) {

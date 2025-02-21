@@ -1,8 +1,9 @@
-import BookingTableHeader from './BookingTableHeader';
+import {BookingTableHeader} from './BookingTableHeader';
 import { useState } from 'react';
 import { format, eachDayOfInterval, startOfMonth, endOfMonth } from 'date-fns';
 import styles from '../styles/BookingTable.module.css';
 import { Selection } from '../classes/BookingTable';
+import { isWeekend } from 'date-fns';
 
 interface Apartment {
     id: number;
@@ -94,7 +95,7 @@ export default function BookingTable({ apartments, currentMonth, onSelectionChan
                                     key={format(day, 'yyyy-MM-dd')}
                                     className={`${styles.bookingCell} ${
                                         isSelected(apartment.id, day) ? styles.selected : ''
-                                    }`}
+                                    } ${isWeekend(day) ? styles.weekendCell : ''}`}
                                     onMouseDown={() => handleMouseDown(apartment.id, day)}
                                     onMouseEnter={() => handleMouseEnter(apartment.id, day)}
                                 >

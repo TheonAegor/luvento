@@ -1,12 +1,13 @@
 import { format, eachDayOfInterval, startOfMonth, endOfMonth } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import styles from '../styles/BookingTable.module.css';
+import { isWeekend } from 'date-fns';
 
 interface BookingTableHeaderProps {
     currentMonth: Date;
 }
 
-export default function BookingTableHeader({ currentMonth }: BookingTableHeaderProps) {
+export function BookingTableHeader({ currentMonth }: BookingTableHeaderProps) {
     // Получаем все дни текущего месяца
     const daysInMonth = eachDayOfInterval({
         start: startOfMonth(currentMonth),
@@ -24,7 +25,7 @@ export default function BookingTableHeader({ currentMonth }: BookingTableHeaderP
                     >
                         <div className={styles.dateHeader}>
                             <div>{format(day, 'd')}</div>
-                            <div className={styles.dayName}>
+                            <div className={`${styles.dayName}`}>
                                 {format(day, 'EEEEEE', { locale: ru })}
                             </div>
                         </div>

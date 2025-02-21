@@ -52,3 +52,15 @@
 .booking-cell.selected:last-child {
     border-right-width: 2px;
 }
+
+.weekendCell {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+.weekendCell:hover {
+    background-color: rgba(0, 0, 0, 0.06);
+}
+
+.weekendCell.selected {
+    background-color: rgba(25, 118, 210, 0.15);
+}

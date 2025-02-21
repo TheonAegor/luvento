@@ -1,9 +1,16 @@
 import {BookingTableHeader} from './BookingTableHeader';
-import { useState } from 'react';
-import { format, eachDayOfInterval, startOfMonth, endOfMonth } from 'date-fns';
+import { useState, useRef } from 'react';
 import styles from '../styles/BookingTable.module.css';
 import { Selection } from '../classes/BookingTable';
-import { isWeekend } from 'date-fns';
+import { 
+    format, 
+    eachDayOfInterval, 
+    addMonths, 
+    subMonths, 
+    startOfMonth,
+    endOfMonth,
+    isWeekend 
+} from 'date-fns';
 
 interface Apartment {
     id: number;
@@ -21,11 +28,53 @@ interface BookingTableProps {
 export default function BookingTable({ apartments, currentMonth, onSelectionChange }: BookingTableProps) {
     const [isSelecting, setIsSelecting] = useState(false);
     const [selection, setSelection] = useState<Selection | null>(null);
+
+        // Начальный диапазон: текущий месяц + 2 месяца вперед и 1 назад
+        const [dateRange, setDateRange] = useState({
+            start: startOfMonth(subMonths(new Date(), 1)),
+            end: endOfMonth(addMonths(new Date(), 2))
+        });
+
+        const containerRef = useRef<HTMLTableElement>(null);
     
-    const daysInMonth = eachDayOfInterval({
-        start: startOfMonth(currentMonth),
-        end: endOfMonth(currentMonth)
-    });
+        const daysInRange = eachDayOfInterval({
+            start: dateRange.start,
+            end: dateRange.end
+        });
+
+            // Обработчик прокрутки
+    const handleScroll = () => {
+        if (!containerRef.current) return;
+        
+        const { scrollLeft, scrollWidth, clientWidth } = containerRef.current;
+        const scrollRatio = scrollLeft / (scrollWidth - clientWidth);
+
+        // Если прокрутили близко к краю, добавляем даты
+        if (scrollRatio > 0.7) {
+            setDateRange(prev => ({
+                ...prev,
+                end: endOfMonth(addMonths(prev.end, 1))
+            }));
+        } else if (scrollRatio < 0.3) {
+            setDateRange(prev => ({
+                ...prev,
+                start: startOfMonth(subMonths(prev.start, 1))
+            }));
+        }
+    };
+
+    // Кнопки навигации по месяцам
+    const scrollToMonth = (direction: 'prev' | 'next') => {
+        if (!containerRef.current) return;
+        
+        const cellWidth = 40; // ширина ячейки
+        const daysToScroll = 30; // примерно месяц
+        
+        containerRef.current.scrollBy({
+            left: direction === 'next' ? cellWidth * daysToScroll : -(cellWidth * daysToScroll),
+            behavior: 'smooth'
+        });
+    };
 
     const handleMouseDown = (apartmentId: number, date: Date) => {
         setIsSelecting(true);
@@ -79,18 +128,36 @@ export default function BookingTable({ apartments, currentMonth, onSelectionChan
 
 
     return (
+        <>  
+        <div className={styles.navigationControls}>
+        <button 
+            className={styles.navigationButton}
+            onClick={() => scrollToMonth('prev')}
+        >
+            ← Предыдущий месяц
+        </button>
+        <button 
+            className={styles.navigationButton}
+            onClick={() => scrollToMonth('next')}
+        >
+            Следующий месяц →
+        </button>
+    </div>
         <div 
             className={styles.bookingTableContainer}
             onMouseUp={handleMouseUp}
             onMouseLeave={handleMouseUp}
         >
-            <table className={styles.bookingTable}>
+            <table className={styles.bookingTable}
+                ref={containerRef}
+                onScroll={handleScroll}
+            >
                 <BookingTableHeader currentMonth={currentMonth} />
                 <tbody>
                     {apartments.map(apartment => (
                         <tr key={apartment.id}>
                             <td className={styles.apartmentColumn}>{apartment.name}</td>
-                            {daysInMonth.map(day => (
+                            {daysInRange.map(day => (
                                 <td
                                     key={format(day, 'yyyy-MM-dd')}
                                     className={`${styles.bookingCell} ${
@@ -107,5 +174,6 @@ export default function BookingTable({ apartments, currentMonth, onSelectionChan
                 </tbody>
             </table>
         </div>
+        </>
     );
 }

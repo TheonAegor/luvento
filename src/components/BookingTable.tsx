@@ -13,6 +13,7 @@ import {
     isToday,
 } from 'date-fns';
 import { defaultDateLib } from '../classes/DateLib';
+import { useHorizontalScroll } from 'src/helpers/userHorizontalScroll';
 
 interface Apartment {
     id: number;
@@ -31,6 +32,7 @@ export default function BookingTable({ apartments, currentMonth, onSelectionChan
     const [isSelecting, setIsSelecting] = useState(false);
     const [selection, setSelection] = useState<Selection | null>(null);
     const tableRef = useRef<HTMLDivElement>(null);
+    const scrollRef = useHorizontalScroll(tableRef);
 
     // Начальный диапазон: текущий месяц + 2 месяца вперед и 1 назад
     const [dateRange, setDateRange] = useState({
@@ -130,34 +132,11 @@ export default function BookingTable({ apartments, currentMonth, onSelectionChan
         }
     };
 
-    const handleWheel = (event: React.WheelEvent) => {
-        if (containerRef.current) {
-            event.preventDefault(); // Предотвращаем стандартную прокрутку
-            containerRef.current.scrollLeft += event.deltaY;
-        }
-    };
-
-    // Добавляем preventDefault для всего документа при прокрутке над таблицей
-    useEffect(() => {
-        const container = containerRef.current;
-        if (!container) return;
-
-        const preventScroll = (e: WheelEvent) => {
-            e.preventDefault();
-        };
-
-        container.addEventListener('wheel', preventScroll, { passive: false });
-        
-        return () => {
-            container.removeEventListener('wheel', preventScroll);
-        };
-    }, []);
-
     // Обработчик кликов вне таблицы
     // Убирает выделение при клике вне таблицы
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            if (tableRef.current && !tableRef.current.contains(event.target as Node)) {
+            if (scrollRef.current && !scrollRef.current.contains(event.target as Node)) {
                 setSelection(null);
                 setIsSelecting(false);
             }
@@ -167,7 +146,7 @@ export default function BookingTable({ apartments, currentMonth, onSelectionChan
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, []);
+    }, [scrollRef]);
 
     return (
         <>  
@@ -187,14 +166,13 @@ export default function BookingTable({ apartments, currentMonth, onSelectionChan
     </div>
         <div 
             className={styles.bookingTableContainer}
-            ref={tableRef}
+            ref={scrollRef}
             onMouseUp={handleMouseUp}
             onMouseLeave={handleMouseUp}
-            onWheel={handleWheel}
         >
             <table className={styles.bookingTable}
                 ref={containerRef}
-                onScroll={handleScroll}
+            onScroll={handleScroll}
             >
                 <BookingTableHeader interval={daysInRange} />
                 <tbody>

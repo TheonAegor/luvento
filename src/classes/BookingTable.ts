@@ -1,6 +1,6 @@
 export interface Selection {
-    startApartmentId: number;
-    endApartmentId: number;
+    startApartmentId: string;
+    endApartmentId: string;
     startDate: Date;
     endDate: Date;
 }

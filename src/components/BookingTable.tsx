@@ -20,6 +20,7 @@ import { BookingForm } from './BookingForm';
 import { BookingFormData, BookingSelection } from '../types/booking';
 import { Modal } from './Modal';
 import { Room } from '../types/room';
+import { RoomPopup } from './RoomPopup';
 
 interface BookingTableProps {
     apartments: Room[];
@@ -36,6 +37,10 @@ export default function BookingTable({ apartments, onSelectionChange }: BookingT
     const containerRef = useRef<HTMLTableElement>(null);
     const scrollRef = useHorizontalScroll(containerRef);
     const [bookingSelection, setBookingSelection] = useState<BookingSelection | null>(null);
+    const [popup, setPopup] = useState<{
+        room: Room;
+        position: { x: number; y: number };
+    } | null>(null);
 
     // Начальный диапазон: 3 месяца до и 3 месяца после текущего месяца
     const [dateRange, setDateRange] = useState(() => {
@@ -112,7 +117,7 @@ export default function BookingTable({ apartments, onSelectionChange }: BookingT
      * @param apartmentId - ID квартиры
      * @param date - дата выбранной ячейки
      */
-    const handleMouseDown = (apartmentId: number, date: Date) => {
+    const handleMouseDown = (apartmentId: string, date: Date) => {
         setIsSelecting(true);
         const newSelection = {
             startApartmentId: apartmentId,
@@ -129,7 +134,7 @@ export default function BookingTable({ apartments, onSelectionChange }: BookingT
      * @param apartmentId - ID квартиры
      * @param date - дата ячейки
      */
-    const handleMouseEnter = (apartmentId: number, date: Date) => {
+    const handleMouseEnter = (apartmentId: string, date: Date) => {
         if (isSelecting && selection) {
             const newSelection = {
                 ...selection,
@@ -146,12 +151,16 @@ export default function BookingTable({ apartments, onSelectionChange }: BookingT
      * @param date - дата ячейки
      * @returns true если ячейка входит в выделенный диапазон
      */
-    const isSelected = (apartmentId: number, date: Date) => {
+    const isSelected = (apartmentId: string, date: Date) => {
         if (!selection) return false;
         
         const [minApartmentId, maxApartmentId] = [
-            Math.min(selection.startApartmentId, selection.endApartmentId),
-            Math.max(selection.startApartmentId, selection.endApartmentId)
+            selection.startApartmentId < selection.endApartmentId 
+                ? selection.startApartmentId 
+                : selection.endApartmentId,
+            selection.startApartmentId < selection.endApartmentId 
+                ? selection.endApartmentId 
+                : selection.startApartmentId
         ];
         
         const [minDate, maxDate] = [
@@ -233,6 +242,19 @@ export default function BookingTable({ apartments, onSelectionChange }: BookingT
         }
     }, []);
 
+    // Обработчик клика по ячейке
+    const handleCellClick = (room: Room, event: React.MouseEvent) => {
+        if (!isSelecting) {
+            setPopup({
+                room,
+                position: {
+                    x: event.clientX,
+                    y: event.clientY
+                }
+            });
+        }
+    };
+
     return (
         <div style={CSS_VARS}>
             <div className={styles.navigationControls}>
@@ -267,20 +289,26 @@ export default function BookingTable({ apartments, onSelectionChange }: BookingT
                 >
                     <BookingTableHeader interval={daysInRange} />
                     <tbody>
-                        {apartments.map(apartment => (
-                            <tr key={apartment.id}>
-                                <td className={styles.apartmentColumn}>{apartment.name}</td>
+                        {apartments.map(room => (
+                            <tr key={room.uuid}>
+                                <td 
+                                    className={styles.apartmentColumn}
+                                    onClick={(e) => handleCellClick(room, e)}
+                                >
+                                    {room.number}
+                                </td>
                                 {daysInRange.map(day => (
                                     <td
                                         key={format(day, 'yyyy-MM-dd')}
                                         className={`
                                             ${styles.bookingCell}
                                             ${isWeekend(day) ? styles.weekendCell : ''}
-                                            ${isSelected(apartment.id, day) ? styles.selected : ''}
+                                            ${isSelected(room.uuid, day) ? styles.selected : ''}
                                             ${isToday(day) ? styles.todayCell : ''}
                                         `}
-                                        onMouseDown={() => handleMouseDown(apartment.id, day)}
-                                        onMouseEnter={() => handleMouseEnter(apartment.id, day)}
+                                        onMouseDown={() => handleMouseDown(room.uuid, day)}
+                                        onMouseEnter={() => handleMouseEnter(room.uuid, day)}
+                                        onClick={(e) => handleCellClick(room, e)}
                                     >
                                         {/* Здесь может быть контент ячейки */}
                                     </td>
@@ -300,6 +328,14 @@ export default function BookingTable({ apartments, onSelectionChange }: BookingT
                     onCancel={() => setBookingSelection(null)}
                 />
             </Modal>
+            
+            {popup && (
+                <RoomPopup
+                    room={popup.room}
+                    position={popup.position}
+                    onClose={() => setPopup(null)}
+                />
+            )}
         </div>
     );
 }

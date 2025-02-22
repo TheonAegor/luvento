@@ -19,15 +19,10 @@ import { SIZES, CSS_VARS } from '../constants/sizes';
 import { BookingForm } from './BookingForm';
 import { BookingFormData, BookingSelection } from '../types/booking';
 import { Modal } from './Modal';
-
-interface Apartment {
-    id: number;
-    name: string;
-    // другие поля...
-}
+import { Room } from '../types/room';
 
 interface BookingTableProps {
-    apartments: Apartment[];
+    apartments: Room[];
     currentMonth: Date;
     onSelectionChange?: (selection: Selection) => void;
 }

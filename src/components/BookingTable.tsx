@@ -1,5 +1,5 @@
 import {BookingTableHeader} from './BookingTableHeader';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, use } from 'react';
 import styles from '../styles/BookingTable.module.css';
 import { Selection } from '../classes/BookingTable';
 import { 
@@ -11,9 +11,11 @@ import {
     endOfMonth,
     isWeekend,
     isToday,
+    differenceInDays,
 } from 'date-fns';
 import { defaultDateLib } from '../classes/DateLib';
 import { useHorizontalScroll } from 'src/helpers/userHorizontalScroll';
+import { SIZES, CSS_VARS } from '../constants/sizes';
 
 interface Apartment {
     id: number;
@@ -27,28 +29,35 @@ interface BookingTableProps {
     onSelectionChange?: (selection: Selection) => void;
 }
 
+/** Количество дней слева от текущей даты */
+const OFFSET_DAYS = 4; // 4 дня до + текущий день = 5-й день
 
-export default function BookingTable({ apartments, currentMonth, onSelectionChange }: BookingTableProps) {
+export default function BookingTable({ apartments, onSelectionChange }: BookingTableProps) {
     const [isSelecting, setIsSelecting] = useState(false);
     const [selection, setSelection] = useState<Selection | null>(null);
-    const tableRef = useRef<HTMLDivElement>(null);
-    const scrollRef = useHorizontalScroll(tableRef);
+    const containerRef = useRef<HTMLTableElement>(null);
+    const scrollRef = useHorizontalScroll(containerRef);
 
-    // Начальный диапазон: текущий месяц + 2 месяца вперед и 1 назад
-    const [dateRange, setDateRange] = useState({
-        start: startOfMonth(subMonths(defaultDateLib.today(), 1)),
-        end: endOfMonth(addMonths(defaultDateLib.today(), 2))
+    // Начальный диапазон: 3 месяца до и 3 месяца после текущего месяца
+    const [dateRange, setDateRange] = useState(() => {
+        const today = defaultDateLib.today();
+        return {
+            start: startOfMonth(subMonths(today, 1)),
+            end: endOfMonth(addMonths(today, 3))
+        };
     });
 
-    const containerRef = useRef<HTMLTableElement>(null);
-    
     const daysInRange = eachDayOfInterval({
         start: dateRange.start,
         end: dateRange.end
     });
 
-
-            // Обработчик прокрутки
+    /**
+     * Обработчик прокрутки таблицы.
+     * Добавляет новые месяцы при приближении к краям таблицы:
+     * - при прокрутке вправе добавляет месяц в конец
+     * - при прокрутке влево добавляет месяц в начало
+     */
     const handleScroll = () => {
         if (!containerRef.current) return;
         
@@ -69,7 +78,10 @@ export default function BookingTable({ apartments, currentMonth, onSelectionChan
         }
     };
 
-    // Кнопки навигации по месяцам
+    /**
+     * Прокручивает таблицу на один месяц вперед или назад
+     * @param direction - направление прокрутки ('prev' | 'next')
+     */
     const scrollToMonth = (direction: 'prev' | 'next') => {
         if (!containerRef.current) return;
         
@@ -82,6 +94,25 @@ export default function BookingTable({ apartments, currentMonth, onSelectionChan
         });
     };
 
+    /**
+     * Прокручивает таблицу так, чтобы текущий день был пятым слева
+     * после колонки с названием квартиры
+     */
+    const scrollToToday = () => {
+        if (containerRef.current) {
+            const today = defaultDateLib.today();
+            const daysSinceStart = differenceInDays(today, dateRange.start);
+            const scrollPosition = (daysSinceStart - OFFSET_DAYS) * (SIZES.CELL_WIDTH + 8) + (SIZES.APARTMENT_COLUMN_WIDTH + 8);
+            
+            containerRef.current.scrollLeft = scrollPosition;
+        }
+    };
+
+    /**
+     * Обработчик начала выделения ячеек
+     * @param apartmentId - ID квартиры
+     * @param date - дата выбранной ячейки
+     */
     const handleMouseDown = (apartmentId: number, date: Date) => {
         setIsSelecting(true);
         const newSelection = {
@@ -93,6 +124,12 @@ export default function BookingTable({ apartments, currentMonth, onSelectionChan
         setSelection(newSelection);
     };
 
+    /**
+     * Обработчик перемещения мыши при выделении
+     * Обновляет диапазон выделения при перемещении мыши с зажатой кнопкой
+     * @param apartmentId - ID квартиры
+     * @param date - дата ячейки
+     */
     const handleMouseEnter = (apartmentId: number, date: Date) => {
         if (isSelecting && selection) {
             const newSelection = {
@@ -104,6 +141,12 @@ export default function BookingTable({ apartments, currentMonth, onSelectionChan
         }
     };
 
+    /**
+     * Проверяет, входит ли ячейка в текущее выделение
+     * @param apartmentId - ID квартиры
+     * @param date - дата ячейки
+     * @returns true если ячейка входит в выделенный диапазон
+     */
     const isSelected = (apartmentId: number, date: Date) => {
         if (!selection) return false;
         
@@ -125,6 +168,10 @@ export default function BookingTable({ apartments, currentMonth, onSelectionChan
         );
     };
 
+    /**
+     * Обработчик окончания выделения
+     * Вызывает callback onSelectionChange с итоговым выделением
+     */
     const handleMouseUp = () => {
         setIsSelecting(false);
         if (selection) {
@@ -133,8 +180,8 @@ export default function BookingTable({ apartments, currentMonth, onSelectionChan
     };
 
     // Обработчик кликов вне таблицы
-    // Убирает выделение при клике вне таблицы
     useEffect(() => {
+        /** Сбрасывает выделение при клике вне таблицы */
         const handleClickOutside = (event: MouseEvent) => {
             if (scrollRef.current && !scrollRef.current.contains(event.target as Node)) {
                 setSelection(null);
@@ -148,57 +195,74 @@ export default function BookingTable({ apartments, currentMonth, onSelectionChan
         };
     }, [scrollRef]);
 
+    // Начальная прокрутка к текущей дате
+    useEffect(() => {
+        if (containerRef.current) {
+            const today = defaultDateLib.today();
+            const daysSinceStart = differenceInDays(today, dateRange.start);
+            const scrollPosition = daysSinceStart * SIZES.CELL_WIDTH + SIZES.APARTMENT_COLUMN_WIDTH;
+            
+            containerRef.current.scrollLeft = scrollPosition;
+        }
+    }, []);
+
     return (
-        <>  
-        <div className={styles.navigationControls}>
-        <button 
-            className={styles.navigationButton}
-            onClick={() => scrollToMonth('prev')}
-        >
-            ← Предыдущий месяц
-        </button>
-        <button 
-            className={styles.navigationButton}
-            onClick={() => scrollToMonth('next')}
-        >
-            Следующий месяц →
-        </button>
-    </div>
-        <div 
-            className={styles.bookingTableContainer}
-            ref={scrollRef}
-            onMouseUp={handleMouseUp}
-            onMouseLeave={handleMouseUp}
-        >
-            <table className={styles.bookingTable}
-                ref={containerRef}
-            onScroll={handleScroll}
+        <div style={CSS_VARS}>
+            <div className={styles.navigationControls}>
+                <button 
+                    className={styles.navigationButton}
+                    onClick={() => scrollToMonth('prev')}
+                >
+                    ← Предыдущий месяц
+                </button>
+                <button 
+                    className={styles.navigationButton}
+                    onClick={scrollToToday}
+                >
+                    Сегодня
+                </button>
+                <button 
+                    className={styles.navigationButton}
+                    onClick={() => scrollToMonth('next')}
+                >
+                    Следующий месяц →
+                </button>
+            </div>
+            <div 
+                className={styles.bookingTableContainer}
+                ref={scrollRef}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseUp}
             >
-                <BookingTableHeader interval={daysInRange} />
-                <tbody>
-                    {apartments.map(apartment => (
-                        <tr key={apartment.id}>
-                            <td className={styles.apartmentColumn}>{apartment.name}</td>
-                            {daysInRange.map(day => (
-                                <td
-                                    key={format(day, 'yyyy-MM-dd')}
-                                    className={`
-                                        ${styles.bookingCell}
-                                        ${isWeekend(day) ? styles.weekendCell : ''}
-                                        ${isSelected(apartment.id, day) ? styles.selected : ''}
-                                        ${isToday(day) ? styles.todayCell : ''}
-                                    `}
-                                    onMouseDown={() => handleMouseDown(apartment.id, day)}
-                                    onMouseEnter={() => handleMouseEnter(apartment.id, day)}
-                                >
-                                    {/* Здесь может быть контент ячейки */}
-                                </td>
-                            ))}
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+                <table className={styles.bookingTable}
+                    ref={containerRef}
+                    onScroll={handleScroll}
+                >
+                    <BookingTableHeader interval={daysInRange} />
+                    <tbody>
+                        {apartments.map(apartment => (
+                            <tr key={apartment.id}>
+                                <td className={styles.apartmentColumn}>{apartment.name}</td>
+                                {daysInRange.map(day => (
+                                    <td
+                                        key={format(day, 'yyyy-MM-dd')}
+                                        className={`
+                                            ${styles.bookingCell}
+                                            ${isWeekend(day) ? styles.weekendCell : ''}
+                                            ${isSelected(apartment.id, day) ? styles.selected : ''}
+                                            ${isToday(day) ? styles.todayCell : ''}
+                                        `}
+                                        onMouseDown={() => handleMouseDown(apartment.id, day)}
+                                        onMouseEnter={() => handleMouseEnter(apartment.id, day)}
+                                    >
+                                        {/* Здесь может быть контент ячейки */}
+                                    </td>
+                                ))}
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
         </div>
-        </>
     );
 }

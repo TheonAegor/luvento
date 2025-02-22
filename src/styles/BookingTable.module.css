@@ -42,10 +42,11 @@
 }
 
 .dateColumn {
-    min-width: 60px;
-    border: 1px solid #ddd;
+    min-width: 40px;
+    border: 1px solid #e0e0e0;
     text-align: center;
     padding: 5px;
+    position: relative;
 }
 
 .dateHeader {
@@ -131,4 +132,20 @@ tr:last-child .selected {
 .todayCell {
     background-color: rgba(25, 210, 118, 0.296);
     position: relative;
+}
+
+.monthRow {
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.monthCell {
+    padding: 8px;
+    text-align: center;
+    border-right: 1px solid #e0e0e0;
+    background: #f5f5f5;
+    text-transform: capitalize;
+}
+
+.monthStart {
+    border-left: 2px solid #e0e0e0;
 }

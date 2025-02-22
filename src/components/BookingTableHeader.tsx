@@ -1,4 +1,4 @@
-import { format } from 'date-fns';
+import { format, isWeekend, isToday } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import styles from '../styles/BookingTable.module.css';
 
@@ -15,11 +15,15 @@ export function BookingTableHeader({ interval }: BookingTableHeaderProps) {
                 {interval.map((day) => (
                     <th 
                         key={format(day, 'yyyy-MM-dd')}
-                        className={styles.dateColumn}
+                        className={`
+                            ${styles.dateColumn}
+                            ${isWeekend(day) ? styles.weekendCell : ''}
+                            ${isToday(day) ? styles.todayCell : ''}
+                        `}
                     >
                         <div className={styles.dateHeader}>
                             <div>{format(day, 'd')}</div>
-                            <div className={`${styles.dayName}`}>
+                            <div className={styles.dayName}>
                                 {format(day, 'EEEEEE', { locale: ru })}
                             </div>
                         </div>

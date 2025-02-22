@@ -122,3 +122,8 @@ tr:last-child .selected {
 .weekendCell.selected {
     background-color: rgba(25, 118, 210, 0.15);
 }
+
+.todayCell {
+    background-color: rgba(25, 210, 118, 0.296);
+    position: relative;
+}

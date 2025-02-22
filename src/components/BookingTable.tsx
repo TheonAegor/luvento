@@ -10,6 +10,7 @@ import {
     startOfMonth,
     endOfMonth,
     isWeekend,
+    isToday,
 } from 'date-fns';
 import { defaultDateLib } from '../classes/DateLib';
 
@@ -203,9 +204,12 @@ export default function BookingTable({ apartments, currentMonth, onSelectionChan
                             {daysInRange.map(day => (
                                 <td
                                     key={format(day, 'yyyy-MM-dd')}
-                                    className={`${styles.bookingCell} ${
-                                        isSelected(apartment.id, day) ? styles.selected : ''
-                                    } ${isWeekend(day) ? styles.weekendCell : ''}`}
+                                    className={`
+                                        ${styles.bookingCell}
+                                        ${isWeekend(day) ? styles.weekendCell : ''}
+                                        ${isSelected(apartment.id, day) ? styles.selected : ''}
+                                        ${isToday(day) ? styles.todayCell : ''}
+                                    `}
                                     onMouseDown={() => handleMouseDown(apartment.id, day)}
                                     onMouseEnter={() => handleMouseEnter(apartment.id, day)}
                                 >

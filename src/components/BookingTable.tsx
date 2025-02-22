@@ -260,7 +260,8 @@ export default function BookingTable({ apartments, bookings, onBookingCreate, on
 
     // Обработчик клика по ячейке
     const handleCellClick = (room: Room, event: React.MouseEvent) => {
-        if (!isSelecting) {
+        // Показываем попап только при клике на номер комнаты в первом столбце
+        if (event.currentTarget.classList.contains(styles.apartmentColumn)) {
             setPopup({
                 room,
                 position: {
@@ -334,7 +335,6 @@ export default function BookingTable({ apartments, bookings, onBookingCreate, on
                                         `}
                                         onMouseDown={() => !isBooked(room.uuid, day) && handleMouseDown(room.uuid, day)}
                                         onMouseEnter={() => handleMouseEnter(room.uuid, day)}
-                                        onClick={(e) => handleCellClick(room, e)}
                                     >
                                         <div style={priceStyles}>
                                             {room.base_price} ₽

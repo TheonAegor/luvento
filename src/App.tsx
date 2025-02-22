@@ -1,5 +1,4 @@
 import { useState } from "react"
-import { defaultDateLib } from "./classes/DateLib.ts"
 import BookingTable from "./components/BookingTable.tsx"
 import { TopMenu } from "./components/TopMenu.tsx"
 import { Selection } from "./classes/BookingTable.ts"
@@ -8,12 +7,9 @@ import { RoomForm } from "./components/RoomForm"
 import { CreateRoomDto, Room } from "./types/room"
 import { Modal } from "./components/Modal"
 import { mockBookings } from "./mocks/bookings"
-import { Booking, BookingStatus } from "./types/booking"
-import { BookingFormData } from "./types/booking"
-import { BookingSelection } from "./types/booking"
+import { Booking } from "./types/booking"
 
 function App() {
-    const dateLib = defaultDateLib;
     const [showRoomForm, setShowRoomForm] = useState(false);
     const [rooms, setRooms] = useState<Room[]>(mockRooms);
     const [bookings, setBookings] = useState<Booking[]>(mockBookings);

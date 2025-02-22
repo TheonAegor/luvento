@@ -1,5 +1,5 @@
 // src/components/Calendar/Calendar.tsx
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { DateLib, defaultDateLib } from '../classes/DateLib';
 import CalendarHeader from './CalendarHeader';
 import CalendarDay from './CalendarDay';

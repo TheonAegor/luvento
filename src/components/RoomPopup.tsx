@@ -8,9 +8,10 @@ interface RoomPopupProps {
 }
 
 const roomTypeNames: Record<RoomType, string> = {
-    [RoomType.STANDARD]: 'Стандарт',
-    [RoomType.DELUXE]: 'Делюкс',
-    [RoomType.SUITE]: 'Люкс'
+    [RoomType.HOTEL_ROOM]: 'Отельный номер',
+    [RoomType.APARTMENT]: 'Апартаменты',
+    [RoomType.STUDIO]: 'Студия',
+    [RoomType.PENTHOUSE]: 'Пентхаус'
 };
 
 export function RoomPopup({ room, position, onClose }: RoomPopupProps) {

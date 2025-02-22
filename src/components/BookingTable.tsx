@@ -1,5 +1,5 @@
 import {BookingTableHeader} from './BookingTableHeader';
-import { useState, useRef, useEffect, use } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import styles from '../styles/BookingTable.module.css';
 import { Selection } from '../classes/BookingTable';
 import { 
@@ -16,6 +16,9 @@ import {
 import { defaultDateLib } from '../classes/DateLib';
 import { useHorizontalScroll } from 'src/helpers/userHorizontalScroll';
 import { SIZES, CSS_VARS } from '../constants/sizes';
+import { BookingForm } from './BookingForm';
+import { BookingFormData, BookingSelection } from '../types/booking';
+import { Modal } from './Modal';
 
 interface Apartment {
     id: number;
@@ -37,6 +40,7 @@ export default function BookingTable({ apartments, onSelectionChange }: BookingT
     const [selection, setSelection] = useState<Selection | null>(null);
     const containerRef = useRef<HTMLTableElement>(null);
     const scrollRef = useHorizontalScroll(containerRef);
+    const [bookingSelection, setBookingSelection] = useState<BookingSelection | null>(null);
 
     // Начальный диапазон: 3 месяца до и 3 месяца после текущего месяца
     const [dateRange, setDateRange] = useState(() => {
@@ -176,6 +180,34 @@ export default function BookingTable({ apartments, onSelectionChange }: BookingT
         setIsSelecting(false);
         if (selection) {
             onSelectionChange?.(selection);
+            handleSelectionComplete(selection);
+        }
+    };
+
+    const handleSelectionComplete = (selection: Selection) => {
+        setBookingSelection({
+            rooms: [selection.startApartmentId.toString()], // преобразуйте ID в UUID
+            arrival_date: selection.startDate,
+            departure_date: selection.endDate
+        });
+    };
+
+    /**
+     * Обработчик отправки формы бронирования
+     * @param formData - данные формы + выбранные даты и комнаты
+     */
+    const handleBookingSubmit = async (formData: BookingFormData & BookingSelection) => {
+        try {
+            // Здесь будет отправка данных на сервер
+            console.log('Отправка данных бронирования:', formData);
+            
+            // После успешной отправки очищаем выделение
+            setSelection(null);
+            setBookingSelection(null);
+            
+        } catch (error) {
+            console.error('Ошибка при создании бронирования:', error);
+            // Здесь можно добавить обработку ошибок, например показ уведомления
         }
     };
 
@@ -263,6 +295,16 @@ export default function BookingTable({ apartments, onSelectionChange }: BookingT
                     </tbody>
                 </table>
             </div>
+            <Modal 
+                isOpen={bookingSelection !== null}
+                onClose={() => setBookingSelection(null)}
+            >
+                <BookingForm
+                    selection={bookingSelection}
+                    onSubmit={handleBookingSubmit}
+                    onCancel={() => setBookingSelection(null)}
+                />
+            </Modal>
         </div>
     );
 }

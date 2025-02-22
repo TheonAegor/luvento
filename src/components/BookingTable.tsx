@@ -9,8 +9,9 @@ import {
     subMonths, 
     startOfMonth,
     endOfMonth,
-    isWeekend 
+    isWeekend,
 } from 'date-fns';
+import { defaultDateLib } from '../classes/DateLib';
 
 interface Apartment {
     id: number;
@@ -32,8 +33,8 @@ export default function BookingTable({ apartments, currentMonth, onSelectionChan
 
     // Начальный диапазон: текущий месяц + 2 месяца вперед и 1 назад
     const [dateRange, setDateRange] = useState({
-        start: startOfMonth(subMonths(new Date(), 1)),
-        end: endOfMonth(addMonths(new Date(), 2))
+        start: startOfMonth(subMonths(defaultDateLib.today(), 1)),
+        end: endOfMonth(addMonths(defaultDateLib.today(), 2))
     });
 
     const containerRef = useRef<HTMLTableElement>(null);
@@ -128,6 +129,29 @@ export default function BookingTable({ apartments, currentMonth, onSelectionChan
         }
     };
 
+    const handleWheel = (event: React.WheelEvent) => {
+        if (containerRef.current) {
+            event.preventDefault(); // Предотвращаем стандартную прокрутку
+            containerRef.current.scrollLeft += event.deltaY;
+        }
+    };
+
+    // Добавляем preventDefault для всего документа при прокрутке над таблицей
+    useEffect(() => {
+        const container = containerRef.current;
+        if (!container) return;
+
+        const preventScroll = (e: WheelEvent) => {
+            e.preventDefault();
+        };
+
+        container.addEventListener('wheel', preventScroll, { passive: false });
+        
+        return () => {
+            container.removeEventListener('wheel', preventScroll);
+        };
+    }, []);
+
     // Обработчик кликов вне таблицы
     // Убирает выделение при клике вне таблицы
     useEffect(() => {
@@ -165,12 +189,13 @@ export default function BookingTable({ apartments, currentMonth, onSelectionChan
             ref={tableRef}
             onMouseUp={handleMouseUp}
             onMouseLeave={handleMouseUp}
+            onWheel={handleWheel}
         >
             <table className={styles.bookingTable}
                 ref={containerRef}
                 onScroll={handleScroll}
             >
-                <BookingTableHeader currentMonth={currentMonth} />
+                <BookingTableHeader interval={daysInRange} />
                 <tbody>
                     {apartments.map(apartment => (
                         <tr key={apartment.id}>

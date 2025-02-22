@@ -1,24 +1,18 @@
-import { format, eachDayOfInterval, startOfMonth, endOfMonth } from 'date-fns';
+import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import styles from '../styles/BookingTable.module.css';
-import { isWeekend } from 'date-fns';
 
 interface BookingTableHeaderProps {
-    currentMonth: Date;
+    interval: Array<Date>;
 }
 
-export function BookingTableHeader({ currentMonth }: BookingTableHeaderProps) {
-    // Получаем все дни текущего месяца
-    const daysInMonth = eachDayOfInterval({
-        start: startOfMonth(currentMonth),
-        end: endOfMonth(currentMonth)
-    });
+export function BookingTableHeader({ interval }: BookingTableHeaderProps) {
 
     return (
         <thead>
             <tr>
                 <th className={styles.apartmentColumn}>Квартира</th>
-                {daysInMonth.map((day) => (
+                {interval.map((day) => (
                     <th 
                         key={format(day, 'yyyy-MM-dd')}
                         className={styles.dateColumn}

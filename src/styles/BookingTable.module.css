@@ -6,6 +6,7 @@
     scrollbar-width: thin;
     margin-left: -16px; /* Компенсация padding родительского контейнера */
     margin-right: -16px;
+    -webkit-overflow-scrolling: touch; /* Для плавной прокрутки на iOS */
 }
 
 .bookingTable {

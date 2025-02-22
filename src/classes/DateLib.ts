@@ -3,14 +3,12 @@ import type {
     EndOfWeekOptions,
     StartOfWeekOptions,
     FormatOptions as DateFnsFormatOptions,
-    GetWeekOptions,
-    Interval
   } from "date-fns";
 
   import type { Locale } from "date-fns/locale";
   import { ru } from "date-fns/locale";
 
-import { Numerals } from "../types";
+import { Numerals } from "../types/shared";
 
 export interface DateLibOptions
   extends DateFnsFormatOptions,

@@ -18,4 +18,23 @@ export interface BookingSelection {
     rooms: string[]; // массив room_uuid
     arrival_date: Date;
     departure_date: Date;
+}
+
+export interface Booking {
+    uuid: string;
+    room_uuid: string;
+    start_date: Date;
+    end_date: Date;
+    guest_name: string;
+    guest_phone: string;
+    guest_email: string;
+    status: BookingStatus;
+    create_date: Date;
+    update_date: Date;
+}
+
+export enum BookingStatus {
+    PENDING = 'PENDING',
+    CONFIRMED = 'CONFIRMED',
+    CANCELLED = 'CANCELLED'
 } 

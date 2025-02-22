@@ -7,11 +7,16 @@ import { mockRooms } from "./mocks/rooms.ts"
 import { RoomForm } from "./components/RoomForm"
 import { CreateRoomDto, Room } from "./types/room"
 import { Modal } from "./components/Modal"
+import { mockBookings } from "./mocks/bookings"
+import { Booking, BookingStatus } from "./types/booking"
+import { BookingFormData } from "./types/booking"
+import { BookingSelection } from "./types/booking"
 
 function App() {
     const dateLib = defaultDateLib;
     const [showRoomForm, setShowRoomForm] = useState(false);
     const [rooms, setRooms] = useState<Room[]>(mockRooms);
+    const [bookings, setBookings] = useState<Booking[]>(mockBookings);
 
     const handleSelectionChange = (selection: Selection) => {
         console.log('Selected:', selection);
@@ -37,12 +42,23 @@ function App() {
         setShowRoomForm(false);
     };
 
+    const handleBookingCreate = (bookingData: Omit<Booking, 'uuid' | 'create_date' | 'update_date'>) => {
+        const newBooking: Booking = {
+            ...bookingData,
+            uuid: crypto.randomUUID(),
+            create_date: new Date(),
+            update_date: new Date()
+        };
+        setBookings(prev => [...prev, newBooking]);
+    };
+
     return (
         <div style={{ paddingTop: '80px' }}>
             <TopMenu onAddRoom={handleAddRoom} />
             <BookingTable 
                 apartments={rooms} 
-                currentMonth={dateLib.today()} 
+                bookings={bookings}
+                onBookingCreate={handleBookingCreate}
                 onSelectionChange={handleSelectionChange} 
             />
             <Modal

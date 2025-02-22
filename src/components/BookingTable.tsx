@@ -17,14 +17,16 @@ import { defaultDateLib } from '../classes/DateLib';
 import { useHorizontalScroll } from 'src/helpers/userHorizontalScroll';
 import { SIZES, CSS_VARS } from '../constants/sizes';
 import { BookingForm } from './BookingForm';
-import { BookingFormData, BookingSelection } from '../types/booking';
+import { BookingFormData, BookingSelection, Booking } from '../types/booking';
 import { Modal } from './Modal';
 import { Room } from '../types/room';
 import { RoomPopup } from './RoomPopup';
+import { BookingStatus } from '../types/booking';
 
 interface BookingTableProps {
     apartments: Room[];
-    currentMonth: Date;
+    bookings: Booking[];
+    onBookingCreate: (booking: Omit<Booking, 'uuid' | 'create_date' | 'update_date'>) => void;
     onSelectionChange?: (selection: Selection) => void;
 }
 
@@ -38,7 +40,7 @@ const priceStyles = {
     marginTop: '4px'
 };
 
-export default function BookingTable({ apartments, onSelectionChange }: BookingTableProps) {
+export default function BookingTable({ apartments, bookings, onBookingCreate, onSelectionChange }: BookingTableProps) {
     const [isSelecting, setIsSelecting] = useState(false);
     const [selection, setSelection] = useState<Selection | null>(null);
     const containerRef = useRef<HTMLTableElement>(null);
@@ -208,17 +210,24 @@ export default function BookingTable({ apartments, onSelectionChange }: BookingT
      * @param formData - данные формы + выбранные даты и комнаты
      */
     const handleBookingSubmit = async (formData: BookingFormData & BookingSelection) => {
-        try {
-            // Здесь будет отправка данных на сервер
-            console.log('Отправка данных бронирования:', formData);
+        try {    // Здесь будет отправка данных на сервер
+        console.log('Отправка данных бронирования:', formData);
+            const newBooking = {
+                room_uuid: formData.rooms[0],
+                start_date: formData.arrival_date,
+                end_date: formData.departure_date,
+                guest_name: `${formData.client_name} ${formData.client_surname}`,
+                guest_phone: formData.phone,
+                guest_email: formData.email,
+                status: BookingStatus.CONFIRMED
+            };
             
-            // После успешной отправки очищаем выделение
+            onBookingCreate(newBooking);
             setSelection(null);
             setBookingSelection(null);
             
         } catch (error) {
             console.error('Ошибка при создании бронирования:', error);
-            // Здесь можно добавить обработку ошибок, например показ уведомления
         }
     };
 
@@ -260,6 +269,15 @@ export default function BookingTable({ apartments, onSelectionChange }: BookingT
                 }
             });
         }
+    };
+
+    // Функция проверки, забронирована ли ячейка
+    const isBooked = (roomId: string, date: Date) => {
+        return bookings.some(booking => 
+            booking.room_uuid === roomId &&
+            date >= booking.start_date &&
+            date <= booking.end_date
+        );
     };
 
     return (
@@ -312,8 +330,9 @@ export default function BookingTable({ apartments, onSelectionChange }: BookingT
                                             ${isWeekend(day) ? styles.weekendCell : ''}
                                             ${isSelected(room.uuid, day) ? styles.selected : ''}
                                             ${isToday(day) ? styles.todayCell : ''}
+                                            ${isBooked(room.uuid, day) ? styles.bookedCell : ''}
                                         `}
-                                        onMouseDown={() => handleMouseDown(room.uuid, day)}
+                                        onMouseDown={() => !isBooked(room.uuid, day) && handleMouseDown(room.uuid, day)}
                                         onMouseEnter={() => handleMouseEnter(room.uuid, day)}
                                         onClick={(e) => handleCellClick(room, e)}
                                     >

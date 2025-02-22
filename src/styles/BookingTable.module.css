@@ -17,8 +17,18 @@
 .bookingTable {
     border-collapse: collapse;
     table-layout: fixed;
-    width: auto;
-    background: white;
+}
+
+/* Базовые стили для всех ячеек */
+.bookingTable td,
+.bookingTable th {
+    border: 1px solid #e0e0e0;
+}
+
+.bookingCell,
+.apartmentColumn,
+.headerCell {
+    border: 1px solid #e0e0e0;
 }
 
 .navigationControls {
@@ -35,10 +45,12 @@
     left: 0;
     background: white;
     z-index: 2;
-    padding: 8px 16px;
     width: var(--apartment-column-width);
-    border: 1px solid #e0e0e0;
-    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+    padding: var(--cell-padding);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border-right: 2px solid #ccc;
 }
 
 .dateColumn {
@@ -63,11 +75,10 @@
 .bookingCell {
     width: var(--cell-width);
     padding: var(--cell-padding);
-    border: 1px solid #e0e0e0;
     cursor: pointer;
-    user-select: none;
     text-align: center;
-    transition: background-color 0.2s ease;
+    vertical-align: middle;
+    background: white;
 }
 
 .bookingCell:hover {
@@ -163,4 +174,13 @@ tr:last-child .selected {
 .navigationButton:hover {
     background: #f5f5f5;
     border-color: #1976d2;
+}
+
+.bookedCell {
+    background-color: rgba(244, 67, 54, 0.1) !important;
+    cursor: not-allowed;
+}
+
+.bookedCell:hover {
+    background-color: rgba(244, 67, 54, 0.15) !important;
 }

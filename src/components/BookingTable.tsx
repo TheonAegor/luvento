@@ -31,6 +31,13 @@ interface BookingTableProps {
 /** Количество дней слева от текущей даты */
 const OFFSET_DAYS = 4; // 4 дня до + текущий день = 5-й день
 
+// Добавим стили для отображения цены
+const priceStyles = {
+    fontSize: '12px',
+    color: '#666',
+    marginTop: '4px'
+};
+
 export default function BookingTable({ apartments, onSelectionChange }: BookingTableProps) {
     const [isSelecting, setIsSelecting] = useState(false);
     const [selection, setSelection] = useState<Selection | null>(null);
@@ -310,7 +317,9 @@ export default function BookingTable({ apartments, onSelectionChange }: BookingT
                                         onMouseEnter={() => handleMouseEnter(room.uuid, day)}
                                         onClick={(e) => handleCellClick(room, e)}
                                     >
-                                        {/* Здесь может быть контент ячейки */}
+                                        <div style={priceStyles}>
+                                            {room.base_price} ₽
+                                        </div>
                                     </td>
                                 ))}
                             </tr>

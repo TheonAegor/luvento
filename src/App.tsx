@@ -1,73 +1,35 @@
-import { useState } from "react"
-import BookingTable from "./components/BookingTable.tsx"
-import { TopMenu } from "./components/TopMenu.tsx"
-import { Selection } from "./classes/BookingTable.ts"
-import { mockRooms } from "./mocks/rooms.ts"
-import { RoomForm } from "./components/RoomForm"
-import { CreateRoomDto, Room } from "./types/room"
-import { Modal } from "./components/Modal"
-import { mockBookings } from "./mocks/bookings"
-import { Booking } from "./types/booking"
+import { useState } from 'react'
+import reactLogo from './assets/react.svg'
+import viteLogo from '/vite.svg'
+import './App.css'
 
 function App() {
-    const [showRoomForm, setShowRoomForm] = useState(false);
-    const [rooms, setRooms] = useState<Room[]>(mockRooms);
-    const [bookings, setBookings] = useState<Booking[]>(mockBookings);
+  const [count, setCount] = useState(0)
 
-    const handleSelectionChange = (selection: Selection) => {
-        console.log('Selected:', selection);
-    };
-
-    const handleAddRoom = () => {
-        setShowRoomForm(true);
-    };
-
-    const handleRoomSubmit = (roomData: CreateRoomDto) => {
-        // Создаем новую комнату с временным UUID
-        const newRoom: Room = {
-            ...roomData,
-            uuid: crypto.randomUUID(), // Генерируем временный UUID
-            create_date: new Date(),
-            update_date: new Date()
-        };
-
-        // Добавляем комнату в список
-        setRooms(prevRooms => [...prevRooms, newRoom]);
-        
-        // Закрываем форму
-        setShowRoomForm(false);
-    };
-
-    const handleBookingCreate = (bookingData: Omit<Booking, 'uuid' | 'create_date' | 'update_date'>) => {
-        const newBooking: Booking = {
-            ...bookingData,
-            uuid: crypto.randomUUID(),
-            create_date: new Date(),
-            update_date: new Date()
-        };
-        setBookings(prev => [...prev, newBooking]);
-    };
-
-    return (
-        <div style={{ paddingTop: '80px' }}>
-            <TopMenu onAddRoom={handleAddRoom} />
-            <BookingTable 
-                apartments={rooms} 
-                bookings={bookings}
-                onBookingCreate={handleBookingCreate}
-                onSelectionChange={handleSelectionChange} 
-            />
-            <Modal
-                isOpen={showRoomForm}
-                onClose={() => setShowRoomForm(false)}
-            >
-                <RoomForm
-                    onSubmit={handleRoomSubmit}
-                    onCancel={() => setShowRoomForm(false)}
-                />
-            </Modal>
-        </div>
-    );
+  return (
+    <>
+      <div>
+        <a href="https://vite.dev" target="_blank">
+          <img src={viteLogo} className="logo" alt="Vite logo" />
+        </a>
+        <a href="https://react.dev" target="_blank">
+          <img src={reactLogo} className="logo react" alt="React logo" />
+        </a>
+      </div>
+      <h1>Vite + React</h1>
+      <div className="card">
+        <button onClick={() => setCount((count) => count + 1)}>
+          count is {count}
+        </button>
+        <p>
+          Edit <code>src/App.tsx</code> and save to test HMR
+        </p>
+      </div>
+      <p className="read-the-docs">
+        Click on the Vite and React logos to learn more
+      </p>
+    </>
+  )
 }
 
-export default App;
+export default App

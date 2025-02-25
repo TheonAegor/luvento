@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Header from './components/header/header'
 import { LanguageProvider } from '@/contexts/LanguageContext'
 import Footer from './components/footer/footer'
+import Layout from './components/layout/layout'
 
 // Импортируйте ваши компоненты страниц
 import { BookingTable } from './components/bookingTable/bookingTable'
@@ -23,19 +24,21 @@ function App() {
   return (
     <LanguageProvider>
       <BrowserRouter>
-        <div className="min-h-screen pb-16">
+        <div className="flex flex-col min-h-screen">
           <Header />
-          <Routes>
-            <Route path="/calendar" element={<BookingTable apartments={rooms} bookings={bookings} onBookingCreate={() => {}} />} />
-            {/* <Route path="/" element={<Home />} />
-            <Route path="/docs" element={<Documentation />} />
-            <Route path="/docs/installation" element={<Installation />} />
-            <Route path="/docs/primitives/typography" element={<Typography />} />
-            <Route path="/components" element={<Components />} /> */}
-            {/* Добавьте другие маршруты по необходимости */}
-          </Routes>
+          <Layout>
+            <Routes>
+              <Route path="/calendar" element={<BookingTable apartments={rooms} bookings={bookings} onBookingCreate={() => {}} />} />
+              {/* <Route path="/" element={<Home />} />
+              <Route path="/docs" element={<Documentation />} />
+              <Route path="/docs/installation" element={<Installation />} />
+              <Route path="/docs/primitives/typography" element={<Typography />} />
+              <Route path="/components" element={<Components />} /> */}
+              {/* Добавьте другие маршруты по необходимости */}
+            </Routes>
+          </Layout>
+          <Footer />
         </div>
-        <Footer />
       </BrowserRouter>
     </LanguageProvider>
   )

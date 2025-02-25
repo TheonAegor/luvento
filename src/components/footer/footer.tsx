@@ -6,7 +6,7 @@ function Footer() {
   const { language, setLanguage } = useLanguage();
 
   return (
-    <footer className="bg-white shadow-md dark:bg-gray-800 py-4 fixed bottom-0 w-full">
+    <footer className="bg-white shadow-md dark:bg-gray-800 py-4 bottom-0 w-full">
       <div className="max-w-screen-xl mx-auto px-4 lg:px-6 flex justify-between items-center">
         <div className="text-sm text-gray-500 dark:text-gray-400">
           © 2025 Luvento. All rights reserved.

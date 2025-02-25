@@ -1,6 +1,6 @@
 import { TableHead, TableHeader, TableRow } from "../ui/table";
 import { format, isWeekend } from 'date-fns';
-import { formatOptions } from '@/lib/i18n';
+import { formatOptions, useTranslation } from '@/lib/i18n';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 interface BookingTableHeaderProps {
@@ -9,6 +9,7 @@ interface BookingTableHeaderProps {
 
 export function BookingTableHeader({ interval }: BookingTableHeaderProps) {
     const { language } = useLanguage();
+    const t = useTranslation(language);
     const options = formatOptions(language);
 
     window.__localeId__ = options.locale;
@@ -28,8 +29,7 @@ export function BookingTableHeader({ interval }: BookingTableHeaderProps) {
     return (
         <TableHeader>
             <TableRow>
-                <TableHead> // TODO: appartment columne
-                </TableHead>
+                <TableHead></TableHead>
                 {Object.values(months).map(month => (
                 <TableHead
                         key={month.name}
@@ -39,7 +39,7 @@ export function BookingTableHeader({ interval }: BookingTableHeaderProps) {
                 ))}
             </TableRow>
             <TableRow>
-                <TableHead>Объект</TableHead>
+                <TableHead>{t.table.object}</TableHead>
                 {interval.map((day) => (
                     <TableHead 
                         key={format(day, 'yyyy-MM-dd')}

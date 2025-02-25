@@ -8,7 +8,7 @@ function Header() {
     const t = useTranslation(language);
 
     return (
-      <header className="bg-white shadow-md dark:bg-gray-800">
+      <header className="h-16 bg-white shadow-md dark:bg-gray-800">
                 <NavigationMenu className="max-w-screen-xl mx-auto px-4 lg:px-6 py-3 flex justify-between items-center">
             <NavigationMenuList>
             <NavigationMenuItem>

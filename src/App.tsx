@@ -20,7 +20,8 @@ import { mockBookings } from "@/mocks/bookings.ts"
 
 function App() {
   const [rooms, setRooms] = useState<Room[]>(mockRooms);
-  const [bookings, setBookings] = useState<Booking[]>(mockBookings);  
+  const [bookings, setBookings] = useState<Booking[]>(mockBookings);
+
   return (
     <LanguageProvider>
       <BrowserRouter>
@@ -28,7 +29,14 @@ function App() {
           <Header />
           <Layout>
             <Routes>
-              <Route path="/calendar" element={<BookingTable apartments={rooms} bookings={bookings} onBookingCreate={() => {}} />} />
+              <Route path="/calendar" element={
+                <BookingTable
+                apartments={rooms}
+                bookings={bookings}
+                onBookingCreate={(booking: Booking) => {
+                  setBookings([...bookings, booking]);
+                }}
+                />} />
               {/* <Route path="/" element={<Home />} />
               <Route path="/docs" element={<Documentation />} />
               <Route path="/docs/installation" element={<Installation />} />

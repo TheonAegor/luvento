@@ -23,11 +23,11 @@ interface BookingSliderProps {
 // Define the validation schema using Zod
 const bookingFormSchema = z.object({
   client_name: z.string().min(1, 'Имя обязательно'),
-  client_surname: z.string().min(1, 'Фамилия обязательна'),
-  email: z.string().email('Неверный формат email').min(1, 'Email обязателен'),
-  phone: z.string().min(1, 'Телефон обязателен'),
-  adults: z.number().min(1, 'Количество взрослых должно быть не менее 1'),
-  children: z.number().min(0, 'Количество детей не может быть отрицательным'),
+  client_surname: z.string().optional(),
+  email: z.string().optional(),
+  phone: z.string().optional(),
+  adults: z.number().optional(),
+  children: z.number().optional(),
   tariff: z.number().optional(),
   payment: z.number().optional(),
   price_per: z.number().optional(),
@@ -69,9 +69,8 @@ const BookingForm: React.FC<BookingSliderProps> = ({ selection, onClose, onSubmi
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
-        <h2 className="text-lg font-bold mb-4">Создание бронирования</h2>
+    <div className="inset-0 flex items-center justify-center">
+      <div className="bg-white p-6 rounded-lg max-w-md w-full">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
             <FormField

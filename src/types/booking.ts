@@ -1,18 +1,18 @@
 export interface BookingFormData {
     client_name: string;
-    client_surname: string;
-    email: string;
-    phone: string;
-    adults: number;
-    children: number;
-    tariff: number;
-    payment: number;
-    price_per: number;
-    amount_total: number;
-    is_hourly: boolean;
-    notes: string;
-    tag: string;
-}
+    client_surname?: string;
+    email?: string;
+    phone?: string;
+    adults?: number;
+    children?: number;
+    tariff?: number; // Make optional
+    payment?: number;
+    price_per?: number;
+    amount_total?: number;
+    is_hourly?: boolean;
+    notes?: string;
+    tag?: string;
+  }
 
 export interface BookingSelection {
     rooms: string[]; // массив room_uuid
@@ -21,7 +21,7 @@ export interface BookingSelection {
 }
 
 export interface Booking {
-    uuid: string;
+    uuid: string[];
     room_uuid: string;
     start_date: Date;
     end_date: Date;

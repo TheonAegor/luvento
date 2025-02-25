@@ -1,7 +1,12 @@
 import { Link } from "react-router-dom";
-                    import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, navigationMenuTriggerStyle } from "../ui/navigation-menu";
+import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, navigationMenuTriggerStyle } from "../ui/navigation-menu";
+import { useLanguage } from '@/contexts/LanguageContext';
+import { useTranslation } from '@/lib/i18n';
 
 function Header() {
+    const { language } = useLanguage();
+    const t = useTranslation(language);
+
     return (
       <header className="bg-white shadow-md dark:bg-gray-800">
                 <NavigationMenu className="max-w-screen-xl mx-auto px-4 lg:px-6 py-3 flex justify-between items-center">
@@ -15,16 +20,12 @@ function Header() {
         </NavigationMenuItem>
             <NavigationMenuItem className="block py-2 px-4 text-gray-700 hover:text-blue-700 dark:text-white">
           <NavigationMenuLink asChild>
-            <Link to="/calendar">
-              Calendar
-            </Link>
+            <Link to="/calendar">{t.menu.calendar}</Link>
           </NavigationMenuLink>
         </NavigationMenuItem>
         <NavigationMenuItem className="block py-2 px-4 text-gray-700 hover:text-blue-700 dark:text-white">
           <NavigationMenuLink asChild>
-            <Link to="/channels">
-              Channels
-            </Link>
+            <Link to="/channels">{t.menu.channels}</Link>
           </NavigationMenuLink>
         </NavigationMenuItem>
             </NavigationMenuList>

@@ -1,23 +1,29 @@
 import { TableHead, TableHeader, TableRow } from "../ui/table";
-import { format, isWeekend, isToday, isSameMonth } from 'date-fns';
-import { ru } from 'date-fns/locale';
+import { format, isWeekend } from 'date-fns';
+import { formatOptions } from '@/lib/i18n';
+import { useLanguage } from '@/contexts/LanguageContext';
+
 interface BookingTableHeaderProps {
     interval: Array<Date>;
 }
 
 export function BookingTableHeader({ interval }: BookingTableHeaderProps) {
-        // Группируем даты по месяцам
-        const months = interval.reduce((acc, date) => {
-            const monthKey = format(date, 'yyyy-MM');
-            if (!acc[monthKey]) {
-                acc[monthKey] = {
-                    name: format(date, 'LLLL yyyy', { locale: ru }),
-                    dates: []
-                };
-            }
-            acc[monthKey].dates.push(date);
-            return acc;
-        }, {} as Record<string, { name: string; dates: Date[] }>);
+    const { language } = useLanguage();
+    const options = formatOptions(language);
+
+    window.__localeId__ = options.locale;
+    // Группируем даты по месяцам
+    const months = interval.reduce((acc, date) => {
+        const monthKey = format(date, 'yyyy-MM');
+        if (!acc[monthKey]) {
+            acc[monthKey] = {
+                name: format(date, 'LLLL yyyy'),
+                dates: []
+            };
+        }
+        acc[monthKey].dates.push(date);
+        return acc;
+    }, {} as Record<string, { name: string; dates: Date[] }>);
 
     return (
         <TableHeader>
@@ -44,7 +50,7 @@ export function BookingTableHeader({ interval }: BookingTableHeaderProps) {
                         <div >
                             <div>{format(day, 'd')}</div>
                             <div>
-                                {format(day, 'EEEEEE', { locale: ru })}
+                                {format(day, 'EEEEEE')}
                             </div>
                         </div>
                     </TableHead>

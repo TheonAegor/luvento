@@ -1,6 +1,8 @@
 import './App.css'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Header from './components/header/header'
+import { LanguageProvider } from '@/contexts/LanguageContext'
+import Footer from './components/footer/footer'
 
 // Импортируйте ваши компоненты страниц
 import { BookingTable } from './components/bookingTable/bookingTable'
@@ -19,18 +21,23 @@ function App() {
   const [rooms, setRooms] = useState<Room[]>(mockRooms);
   const [bookings, setBookings] = useState<Booking[]>(mockBookings);  
   return (
-    <BrowserRouter>
-      <Header />
-      <Routes>
-        <Route path="/calendar" element={<BookingTable apartments={rooms} bookings={bookings} onBookingCreate={() => {}} />} />
-        {/* <Route path="/" element={<Home />} />
-        <Route path="/docs" element={<Documentation />} />
-        <Route path="/docs/installation" element={<Installation />} />
-        <Route path="/docs/primitives/typography" element={<Typography />} />
-        <Route path="/components" element={<Components />} /> */}
-        {/* Добавьте другие маршруты по необходимости */}
-      </Routes>
-    </BrowserRouter>
+    <LanguageProvider>
+      <BrowserRouter>
+        <div className="min-h-screen pb-16">
+          <Header />
+          <Routes>
+            <Route path="/calendar" element={<BookingTable apartments={rooms} bookings={bookings} onBookingCreate={() => {}} />} />
+            {/* <Route path="/" element={<Home />} />
+            <Route path="/docs" element={<Documentation />} />
+            <Route path="/docs/installation" element={<Installation />} />
+            <Route path="/docs/primitives/typography" element={<Typography />} />
+            <Route path="/components" element={<Components />} /> */}
+            {/* Добавьте другие маршруты по необходимости */}
+          </Routes>
+        </div>
+        <Footer />
+      </BrowserRouter>
+    </LanguageProvider>
   )
 }
 

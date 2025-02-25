@@ -8,6 +8,7 @@ import { eachDayOfInterval } from "date-fns/eachDayOfInterval";
 import { defaultDateLib } from "../classes/dateLib";
 import { Room } from "@/types/room";
 import { Booking } from "@/types/booking";
+import { formatOptions } from '@/lib/i18n';
 
 interface CalendarDayProps {
     date: Date;

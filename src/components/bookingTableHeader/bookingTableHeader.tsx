@@ -1,5 +1,5 @@
 import { TableHead, TableHeader, TableRow } from "../ui/table";
-import { format, isWeekend } from 'date-fns';
+import { format, isWeekend, isFirstDayOfMonth } from 'date-fns';
 import { formatOptions, useTranslation } from '@/lib/i18n';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Search } from "lucide-react";
@@ -21,17 +21,19 @@ export function BookingTableHeader({ interval }: BookingTableHeaderProps) {
         if (!acc[monthKey]) {
             acc[monthKey] = {
                 name: format(date, 'LLLL yyyy'),
-                dates: []
+                dates: [],
+                colSpan: 0 // добавляем счетчик дней
             };
         }
         acc[monthKey].dates.push(date);
+        acc[monthKey].colSpan++; // увеличиваем счетчик для каждого дня
         return acc;
-    }, {} as Record<string, { name: string; dates: Date[] }>);
+    }, {} as Record<string, { name: string; dates: Date[]; colSpan: number }>);
 
     return (
         <TableHeader>
             <TableRow>
-                <TableHead className="w-[200px] min-w-[200px] bg-white dark:bg-gray-800 border-r shadow-[1px_0_0_0_rgba(0,0,0,0.1)]">
+                <TableHead className="sticky left-0 z-20 w-[200px] min-w-[200px] bg-white dark:bg-gray-800 border-r shadow-[1px_0_0_0_rgba(0,0,0,0.1)]">
                     <div className="flex items-center gap-2 p-2">
                         <Search className="w-4 h-4 text-gray-500" />
                         <Input 
@@ -42,15 +44,17 @@ export function BookingTableHeader({ interval }: BookingTableHeaderProps) {
                     </div>
                 </TableHead>
                 {Object.values(months).map(month => (
-                <TableHead
+                    <TableHead
                         key={month.name}
+                        colSpan={month.colSpan} // используем colSpan для растягивания
+                        className="text-center border-b"
                     >
                         {month.name}
                     </TableHead>
                 ))}
             </TableRow>
             <TableRow>
-                <TableHead className="w-[200px] min-w-[200px] bg-white dark:bg-gray-800 border-r shadow-[1px_0_0_0_rgba(0,0,0,0.1)]">
+                <TableHead className="sticky left-0 z-20 w-[200px] min-w-[200px] bg-white dark:bg-gray-800 border-r shadow-[1px_0_0_0_rgba(0,0,0,0.1)]">
                     <div className="flex items-center gap-2 p-2">
                         {t.table.object}
                     </div>
@@ -60,9 +64,10 @@ export function BookingTableHeader({ interval }: BookingTableHeaderProps) {
                         key={format(day, 'yyyy-MM-dd')}
                         className={`
                             ${isWeekend(day) ? 'bg-gray-200' : ''}
+                            ${isFirstDayOfMonth(day) ? 'border-l-2 border-gray-300' : ''}
                         `}
                     >
-                        <div >
+                        <div>
                             <div>{format(day, 'd')}</div>
                             <div>
                                 {format(day, 'EEEEEE')}

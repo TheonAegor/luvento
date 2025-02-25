@@ -1,7 +1,7 @@
 import { Table, TableBody, TableCell, TableRow } from "../ui/table";
 import { BookingTableHeader } from "../bookingTableHeader/bookingTableHeader";
 import { useState } from "react";
-import { addMonths, endOfMonth, isToday } from "date-fns";
+import { addMonths, endOfMonth, isToday, isFirstDayOfMonth } from "date-fns";
 import { startOfMonth } from "date-fns";
 import { format, subMonths } from "date-fns";
 import { eachDayOfInterval } from "date-fns/eachDayOfInterval";
@@ -50,7 +50,7 @@ function BookingTable({ apartments, bookings, onBookingCreate, onSelectionChange
             <TableBody>
             {apartments.map(room => (
                             <TableRow key={room.uuid}>
-                                <TableCell className="w-[200px] min-w-[200px] bg-white dark:bg-gray-800 border-r shadow-[1px_0_0_0_rgba(0,0,0,0.1)]">
+                                <TableCell className="sticky left-0 z-20 w-[200px] min-w-[200px] bg-white dark:bg-gray-800 border-r shadow-[1px_0_0_0_rgba(0,0,0,0.1)]">
                                     <div className="p-2">
                                         {room.number}
                                     </div>

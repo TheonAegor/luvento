@@ -31,6 +31,7 @@ export const translations = {
       object: 'Объект',
       price: '₽',
       noData: 'Нет данных',
+      searchPlaceholder: 'Поиск объектов...',
     },
     actions: {
       create: 'Создать',
@@ -52,9 +53,10 @@ export const translations = {
       channels: 'Channels',
     },
     table: {
-      object: 'Object',
+      object: 'Property',
       price: '$',
       noData: 'No data',
+      searchPlaceholder: 'Search properties...',
     },
     actions: {
       create: 'Create',

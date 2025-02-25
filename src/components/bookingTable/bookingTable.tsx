@@ -1,14 +1,13 @@
 import { Table, TableBody, TableCell, TableRow } from "../ui/table";
 import { BookingTableHeader } from "../bookingTableHeader/bookingTableHeader";
 import { useState } from "react";
-import { addMonths, endOfMonth } from "date-fns";
+import { addMonths, endOfMonth, isToday } from "date-fns";
 import { startOfMonth } from "date-fns";
 import { format, subMonths } from "date-fns";
 import { eachDayOfInterval } from "date-fns/eachDayOfInterval";
 import { defaultDateLib } from "../classes/dateLib";
 import { Room } from "@/types/room";
 import { Booking } from "@/types/booking";
-import { formatOptions } from '@/lib/i18n';
 
 interface CalendarDayProps {
     date: Date;
@@ -51,13 +50,15 @@ function BookingTable({ apartments, bookings, onBookingCreate, onSelectionChange
             <TableBody>
             {apartments.map(room => (
                             <TableRow key={room.uuid}>
-                                <TableCell>
-                                    {room.number}
+                                <TableCell className="w-[200px] min-w-[200px] bg-white dark:bg-gray-800 border-r shadow-[1px_0_0_0_rgba(0,0,0,0.1)]">
+                                    <div className="p-2">
+                                        {room.number}
+                                    </div>
                                 </TableCell>
                                 {daysInRange.map(day => (
                                     <TableCell
                                         key={format(day, 'yyyy-MM-dd')}
-                                        className={``}
+                                        className={`${isToday(day) ? 'bg-blue-500 text-white' : ''}`}
                                     >
                                             {room.base_price} ₽
                                     </TableCell>

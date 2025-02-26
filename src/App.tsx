@@ -4,12 +4,11 @@ import Header from './components/header/header'
 import { LanguageProvider } from '@/contexts/LanguageContext'
 import Footer from './components/footer/footer'
 import Layout from './components/layout/layout'
-
-// Импортируйте ваши компоненты страниц
+import Properties from './pages/Properties'
 import { BookingTable } from './components/bookingTable/bookingTable'
-import { Room } from '@/types/room';
-import { useState } from 'react';
-import { Booking } from '@/types/booking';
+import { Room } from '@/types/room'
+import { useState } from 'react'
+import { Booking } from '@/types/booking'
 import { mockRooms } from "@/mocks/rooms.ts"
 import { mockBookings } from "@/mocks/bookings.ts"
 // import Home from './pages/Home'
@@ -29,14 +28,16 @@ function App() {
           <Header />
           <Layout>
             <Routes>
+              <Route path="/properties" element={<Properties properties={rooms} />} />
               <Route path="/calendar" element={
                 <BookingTable
-                apartments={rooms}
-                bookings={bookings}
-                onBookingCreate={(booking: Booking) => {
-                  setBookings([...bookings, booking]);
-                }}
-                />} />
+                  apartments={rooms}
+                  bookings={bookings}
+                  onBookingCreate={(booking: Booking) => {
+                    setBookings([...bookings, booking]);
+                  }}
+                />
+              } />
               {/* <Route path="/" element={<Home />} />
               <Route path="/docs" element={<Documentation />} />
               <Route path="/docs/installation" element={<Installation />} />

@@ -14,6 +14,7 @@ export enum PropertyType {
 export interface Property {
   uuid: string;
   name: string;
+  parent_uuid?: string;
   country_id: string;
   city_id: string;
   address: string;
@@ -34,6 +35,7 @@ export interface Property {
 export class PropertyModel implements Property {
   uuid: string;
   name: string;
+  parent_uuid?: string;
   country_id: string;
   city_id: string;
   address: string;
@@ -53,6 +55,7 @@ export class PropertyModel implements Property {
   constructor(data: Partial<Property>) {
     this.uuid = data.uuid || crypto.randomUUID();
     this.name = data.name || '';
+    this.parent_uuid = data.parent_uuid || undefined;
     this.country_id = data.country_id || '';
     this.city_id = data.city_id || '';
     this.address = data.address || '';
@@ -81,6 +84,7 @@ export class PropertyModel implements Property {
     return {
       uuid: this.uuid,
       name: this.name,
+      parent_uuid: this.parent_uuid,
       country_id: this.country_id,
       city_id: this.city_id,
       address: this.address,

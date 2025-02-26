@@ -22,6 +22,8 @@ export function PropertyForm({ onSubmit, parentUUID }: PropertyFormProps) {
   const [formData, setFormData] = useState<Partial<Property>>({
     name: "",
     parent_uuid: parentUUID || "",
+    country_id: "",
+    city_id: "",
     address: "",
     phone: "",
     email: "",
@@ -83,6 +85,31 @@ export function PropertyForm({ onSubmit, parentUUID }: PropertyFormProps) {
               onChange={handleChange}
               required
             />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="country_id">Страна</Label>
+              <Input
+                id="country_id"
+                name="country_id"
+                value={formData.country_id}
+                onChange={handleChange}
+                required
+                placeholder="Код страны (например, RU)"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="city_id">Город</Label>
+              <Input
+                id="city_id"
+                name="city_id"
+                value={formData.city_id}
+                onChange={handleChange}
+                required
+                placeholder="Код города (например, MSK)"
+              />
+            </div>
           </div>
 
           <div className="space-y-2">

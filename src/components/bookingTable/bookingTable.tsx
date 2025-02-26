@@ -1,6 +1,6 @@
 import { Table, TableBody, TableCell, TableRow } from "../ui/table";
 import { BookingTableHeader } from "./bookingTableHeader";
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { addMonths, endOfMonth, isToday, isWeekend } from "date-fns";
 import { startOfMonth, format, subMonths } from "date-fns";
 import { eachDayOfInterval } from "date-fns/eachDayOfInterval";
@@ -21,11 +21,10 @@ interface Selection {
 interface CalendarDayProps {
   date: Date;
   isSelected: boolean;
-  isToday: boolean;
   onClick: (date: Date) => void;
 }
 
-function CalendarDay({ date, isSelected, isToday, onClick }: CalendarDayProps) {
+function CalendarDay({ date, isSelected, onClick }: CalendarDayProps) {
   return (
     <TableCell className={`${isSelected ? 'bg-blue-500 text-white' : ''}`} onClick={() => onClick(date)}>
     </TableCell>
@@ -36,10 +35,9 @@ interface BookingTableProps {
   apartments: Property[];
   bookings: Booking[];
   onBookingCreate: (booking: Booking) => void;
-  onSelectionChange?: (selection: Selection) => void;
 }
 
-function BookingTable({ apartments, bookings, onBookingCreate, onSelectionChange }: BookingTableProps) {
+function BookingTable({ apartments, bookings, onBookingCreate }: BookingTableProps) {
   const [isSelecting, setIsSelecting] = useState(false);
   const [selection, setSelection] = useState<Selection | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
@@ -47,7 +45,7 @@ function BookingTable({ apartments, bookings, onBookingCreate, onSelectionChange
   const scrollRef = useHorizontalScroll(containerRef);
   const [bookingSelection, setBookingSelection] = useState<BookingSelection[] | null>(null);
 
-  const [dateRange, setDateRange] = useState(() => {
+  const [dateRange] = useState(() => {
     const today = defaultDateLib.today();
     return {
       start: startOfMonth(subMonths(today, 1)),

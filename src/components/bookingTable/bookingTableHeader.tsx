@@ -1,6 +1,6 @@
 import { TableHead, TableHeader, TableRow } from "../ui/table";
 import { format, isWeekend, isFirstDayOfMonth } from 'date-fns';
-import { formatOptions, useTranslation } from '@/lib/i18n';
+import { useTranslation } from '@/lib/i18n';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -12,9 +12,7 @@ interface BookingTableHeaderProps {
 export function BookingTableHeader({ interval }: BookingTableHeaderProps) {
     const { language } = useLanguage();
     const t = useTranslation(language);
-    const options = formatOptions(language);
 
-    window.__localeId__ = options.locale;
     // Группируем даты по месяцам
     const months = interval.reduce((acc, date) => {
         const monthKey = format(date, 'yyyy-MM');

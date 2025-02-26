@@ -1,73 +1,79 @@
-import { useState } from "react"
-import BookingTable from "./components/BookingTable.tsx"
-import { TopMenu } from "./components/TopMenu.tsx"
-import { Selection } from "./classes/BookingTable.ts"
-import { mockRooms } from "./mocks/rooms.ts"
-import { RoomForm } from "./components/RoomForm"
-import { CreateRoomDto, Room } from "./types/room"
-import { Modal } from "./components/Modal"
-import { mockBookings } from "./mocks/bookings"
-import { Booking } from "./types/booking"
+import './App.css'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import Header from './components/header/header'
+import { LanguageProvider } from '@/contexts/LanguageContext'
+import Footer from './components/footer/footer'
+import Layout from './components/layout/layout'
+import Properties from './pages/Properties'
+import { BookingTable } from './components/bookingTable/bookingTable'
+import { useState } from 'react'
+import { Booking } from '@/types/booking'
+import { mockRooms } from "@/mocks/rooms.ts"
+import { mockBookings } from "@/mocks/bookings.ts"
+import { PropertyForm } from "@/components/property/propertyForm"
+import { Property, PropertyModel } from "@/types/property"
+// import Home from './pages/Home'
+// import Documentation from './pages/Documentation'
+// import Installation from './pages/Installation'
+// import Typography from './pages/Typography'
+// import Components from './pages/Components'
 
 function App() {
-    const [showRoomForm, setShowRoomForm] = useState(false);
-    const [rooms, setRooms] = useState<Room[]>(mockRooms);
-    const [bookings, setBookings] = useState<Booking[]>(mockBookings);
+  const [properties, setProperties] = useState<Property[]>(mockRooms);
+  const [bookings, setBookings] = useState<Booking[]>(mockBookings);
 
-    const handleSelectionChange = (selection: Selection) => {
-        console.log('Selected:', selection);
-    };
+  const handlePropertySubmit = (propertyData: Partial<Property>) => {
+    const newProperty = new PropertyModel({
+      ...propertyData,
+      uuid: crypto.randomUUID(),
+      create_date: new Date(),
+      update_date: new Date(),
+    });
+    
+    setProperties(prevProperties => [...prevProperties, newProperty]);
+    console.log("Новый объект:", newProperty.toJSON());
+  };
 
-    const handleAddRoom = () => {
-        setShowRoomForm(true);
-    };
-
-    const handleRoomSubmit = (roomData: CreateRoomDto) => {
-        // Создаем новую комнату с временным UUID
-        const newRoom: Room = {
-            ...roomData,
-            uuid: crypto.randomUUID(), // Генерируем временный UUID
-            create_date: new Date(),
-            update_date: new Date()
-        };
-
-        // Добавляем комнату в список
-        setRooms(prevRooms => [...prevRooms, newRoom]);
-        
-        // Закрываем форму
-        setShowRoomForm(false);
-    };
-
-    const handleBookingCreate = (bookingData: Omit<Booking, 'uuid' | 'create_date' | 'update_date'>) => {
-        const newBooking: Booking = {
-            ...bookingData,
-            uuid: crypto.randomUUID(),
-            create_date: new Date(),
-            update_date: new Date()
-        };
-        setBookings(prev => [...prev, newBooking]);
-    };
-
-    return (
-        <div style={{ paddingTop: '80px' }}>
-            <TopMenu onAddRoom={handleAddRoom} />
-            <BookingTable 
-                apartments={rooms} 
-                bookings={bookings}
-                onBookingCreate={handleBookingCreate}
-                onSelectionChange={handleSelectionChange} 
-            />
-            <Modal
-                isOpen={showRoomForm}
-                onClose={() => setShowRoomForm(false)}
-            >
-                <RoomForm
-                    onSubmit={handleRoomSubmit}
-                    onCancel={() => setShowRoomForm(false)}
-                />
-            </Modal>
+  return (
+    <LanguageProvider>
+      <BrowserRouter>
+        <div className="flex flex-col min-h-screen">
+          <Header />
+          <Layout>
+            <Routes>
+              <Route 
+                path="/properties" 
+                element={<Properties properties={properties} />} 
+              />
+              <Route 
+                path="/calendar" 
+                element={
+                  <BookingTable
+                    apartments={properties}
+                    bookings={bookings}
+                    onBookingCreate={(booking: Booking) => {
+                      setBookings([...bookings, booking]);
+                    }}
+                  />
+                } 
+              />
+              <Route 
+                path="/properties/new" 
+                element={<PropertyForm onSubmit={handlePropertySubmit} />} 
+              />
+              {/* <Route path="/" element={<Home />} />
+              <Route path="/docs" element={<Documentation />} />
+              <Route path="/docs/installation" element={<Installation />} />
+              <Route path="/docs/primitives/typography" element={<Typography />} />
+              <Route path="/components" element={<Components />} /> */}
+              {/* Добавьте другие маршруты по необходимости */}
+            </Routes>
+          </Layout>
+          <Footer />
         </div>
-    );
+      </BrowserRouter>
+    </LanguageProvider>
+  )
 }
 
-export default App;
+export default App

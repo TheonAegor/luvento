@@ -26,6 +26,7 @@ export const translations = {
       rooms: 'Номера',
       settings: 'Настройки',
       channels: 'Каналы',
+      properties: 'Объекты',
     },
     table: {
       object: 'Объект',
@@ -51,6 +52,7 @@ export const translations = {
       rooms: 'Rooms',
       settings: 'Settings',
       channels: 'Channels',
+      properties: 'Properties',
     },
     table: {
       object: 'Property',

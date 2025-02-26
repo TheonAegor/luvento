@@ -1,13 +1,16 @@
 import { Link } from "react-router-dom";
-import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger, NavigationMenuContent, navigationMenuTriggerStyle } from "@/components/ui/navigation-menu";
+import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList } from "@/components/ui/navigation-menu";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTranslation } from '@/lib/i18n';
+import { HoverPopover } from "@/components/ui/hover-popover";
+import { useNavigate } from "react-router-dom";
 
 function Header() {
     const { language } = useLanguage();
     const t = useTranslation(language);
+    const navigate = useNavigate();
 
     return (
       <header className="h-16 bg-white shadow-md dark:bg-gray-800">
@@ -15,7 +18,7 @@ function Header() {
           <NavigationMenu>
             <NavigationMenuList className="flex items-center gap-6">
               <NavigationMenuItem>
-                <NavigationMenuLink className={` text-2xl font-bold text-gray-800 dark:text-white`} asChild>
+                <NavigationMenuLink className="text-2xl font-bold text-gray-800 dark:text-white" asChild>
                   <Link to="/main">
                     Luvento
                   </Link>
@@ -34,29 +37,31 @@ function Header() {
                 </Link>
               </NavigationMenuItem>
 
-              <NavigationMenuItem>
-                <NavigationMenuTrigger className={navigationMenuTriggerStyle()}>
-                  Объекты
-                </NavigationMenuTrigger>
-                <NavigationMenuContent className="relative size-32 mt-2 w-[200px] bg-white shadow-lg rounded-md border dark:bg-gray-800">
-                  <Button variant="ghost" className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
-                    <Link to="/properties/new" className="flex items-center">
+              <HoverPopover
+                content={
+                  <Button 
+                    variant="ghost" 
+                    className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    onClick={() => navigate('/properties/new')}
+                  >
+                    <div className="flex items-center">
                       <PlusCircle className="mr-2 h-4 w-4" />
                       Добавить объект
-                    </Link>
+                    </div>
                   </Button>
-                  <NavigationMenuLink asChild>
-                    <Link to="/properties" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
-                      Все объекты
-                    </Link>
-                  </NavigationMenuLink>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
+                }
+              >
+                <NavigationMenuItem className="text-gray-700 hover:text-blue-700 dark:text-white cursor-pointer">
+                  <Link to="/properties">
+                    <NavigationMenuLink>{t.menu.properties}</NavigationMenuLink>
+                  </Link>
+                </NavigationMenuItem>
+              </HoverPopover>
             </NavigationMenuList>
           </NavigationMenu>
         </div>
       </header>
     );
-  }
-  
-  export default Header;
+}
+
+export default Header;

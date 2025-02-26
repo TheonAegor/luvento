@@ -1,61 +1,50 @@
-import { Room, RoomType } from '../types/room';
+import { Property, PropertyType } from "@/types/property";
 
-export const mockRooms: Room[] = [
+export const mockRooms: Property[] = [
     {
-        uuid: "550e8400-e29b-41d4-a716-446655440000",
-        house_uuid: "b5d5d9a6-0ea5-4453-9f8a-7a13d411a0ab",
-        type: RoomType.HOTEL_ROOM,
-        number: 101,
-        floor: 1,
-        description: "Стандартный номер с видом на город",
-        base_price: 3500,
-        capacity: {
-            adults: 2,
-            children: 1
+        uuid: "1",
+        name: "Стандартный номер",
+        parent_uuid: "",
+        country_id: "RU",
+        city_id: "MSK",
+        address: "ул. Примерная, 1",
+        phone: "+7 (999) 123-45-67",
+        email: "room1@hotel.com",
+        geo_data: {
+            latitude: 55.7558,
+            longitude: 37.6173,
         },
-        area: 25,
-        amenities: ["Wi-Fi", "Кондиционер", "Телевизор"],
         source_id: 1,
         rating: 4,
-        create_date: new Date("2024-01-01"),
-        update_date: new Date("2024-01-01")
-    },
-    {
-        uuid: "550e8400-e29b-41d4-a716-446655440001",
-        house_uuid: "b5d5d9a6-0ea5-4453-9f8a-7a13d411a0ab",
-        type: RoomType.APARTMENT,
-        number: 201,
-        floor: 2,
-        description: "Улучшенный номер с балконом",
         base_price: 5000,
-        capacity: {
-            adults: 3,
-            children: 2
-        },
-        area: 45,
-        amenities: ["Wi-Fi", "Кондиционер", "Кухня", "Балкон"],
-        source_id: 1,
-        rating: 5,
+        type: PropertyType.HOTEL,
+        number: 101,
+        floor: 1,
+        description: "Уютный стандартный номер",
         create_date: new Date("2024-01-01"),
-        update_date: new Date("2024-01-01")
+        update_date: new Date("2024-01-01"),
     },
     {
-        uuid: "550e8400-e29b-41d4-a716-446655440002",
-        house_uuid: "b5d5d9a6-0ea5-4453-9f8a-7a13d411a0ab",
-        type: RoomType.PENTHOUSE,
-        number: 301,
-        floor: 3,
-        description: "Люкс с двумя спальнями",
-        base_price: 8000,
-        capacity: {
-            adults: 4,
-            children: 2
+        uuid: "2",
+        name: "Люкс номер",
+        parent_uuid: "",
+        country_id: "RU",
+        city_id: "MSK",
+        address: "ул. Примерная, 1",
+        phone: "+7 (999) 123-45-68",
+        email: "room2@hotel.com",
+        geo_data: {
+            latitude: 55.7558,
+            longitude: 37.6173,
         },
-        area: 80,
-        amenities: ["Wi-Fi", "Кондиционер", "Кухня", "Терраса", "Камин"],
         source_id: 1,
         rating: 5,
+        base_price: 10000,
+        type: PropertyType.HOTEL,
+        number: 102,
+        floor: 1,
+        description: "Просторный люкс номер",
         create_date: new Date("2024-01-01"),
-        update_date: new Date("2024-01-01")
-    }
+        update_date: new Date("2024-01-01"),
+    },
 ]; 

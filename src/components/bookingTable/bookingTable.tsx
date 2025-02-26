@@ -5,12 +5,12 @@ import { addMonths, endOfMonth, isToday, isWeekend } from "date-fns";
 import { startOfMonth, format, subMonths } from "date-fns";
 import { eachDayOfInterval } from "date-fns/eachDayOfInterval";
 import { defaultDateLib } from "../classes/dateLib";
-import { Room } from "@/types/room";
 import { Booking, BookingSelection, BookingStatus } from "@/types/booking";
 import { useHorizontalScroll } from "../helpers/userHorizontalScroll";
-import BookingForm from './BookingSlider';
+import BookingForm from '@/components/bookingTable/BookingForm';
 import { BookingFormData } from "@/types/booking";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Property } from "@/types/property";
 
 interface Selection {
   apartmentUUIDs: string[];
@@ -33,7 +33,7 @@ function CalendarDay({ date, isSelected, isToday, onClick }: CalendarDayProps) {
 }
 
 interface BookingTableProps {
-  apartments: Room[];
+  apartments: Property[];
   bookings: Booking[];
   onBookingCreate: (booking: Booking) => void;
   onSelectionChange?: (selection: Selection) => void;
@@ -83,34 +83,32 @@ function BookingTable({ apartments, bookings, onBookingCreate, onSelectionChange
     if (isSelecting && selection !== null) {
       // Проверяем, есть ли уже этот apartmentId в массиве
       if (!selection.apartmentUUIDs.includes(apartmentId)) {
-        // Добавляем новый apartmentId в массив
         const newApartmentUUIDs = [...selection.apartmentUUIDs, apartmentId];
         
         const newSelection: Selection = {
           apartmentUUIDs: newApartmentUUIDs,
           startDate: selection.startDate,
-          endDate: selection.endDate, // Используем ту же дату окончания
+          endDate: date,
         };
         setSelection(newSelection);
         
-        // Обновляем массив BookingSelection для всех выбранных номеров
-        // с одинаковым диапазоном дат
+        // Обновляем массив BookingSelection
         const newBookingSelections = newApartmentUUIDs.map(roomId => ({
           rooms: [roomId],
           arrival_date: selection.startDate,
-          departure_date: selection.endDate,
+          departure_date: date,
         }));
         
         setBookingSelection(newBookingSelections);
-      } else if (date !== selection.endDate) {
-        // Если apartmentId уже есть, но дата изменилась, обновляем дату окончания
+      } else {
+        // Если apartmentId уже есть, просто обновляем дату окончания
         const newSelection: Selection = {
           ...selection,
           endDate: date,
         };
         setSelection(newSelection);
         
-        // Обновляем массив BookingSelection с новой датой окончания
+        // Обновляем массив BookingSelection
         const newBookingSelections = selection.apartmentUUIDs.map(roomId => ({
           rooms: [roomId],
           arrival_date: selection.startDate,
@@ -201,38 +199,40 @@ function BookingTable({ apartments, bookings, onBookingCreate, onSelectionChange
 
   return (
     <>
-      <div ref={scrollRef} onMouseUp={handleMouseUp}>
-        <Table ref={containerRef}>
-          <BookingTableHeader interval={daysInRange} />
-          <TableBody>
-            {apartments.map((room) => (
-              <TableRow key={room.uuid}>
-                <TableCell className="sticky left-0 z-20 w-[200px] min-w-[200px] bg-white dark:bg-gray-800 border-r shadow-[1px_0_0_0_rgba(0,0,0,0.1)]">
-                  <div className="p-2">{room.number}</div>
-                </TableCell>
-                {daysInRange.map((day) => (
-                  <TableCell
-                    key={format(day, 'yyyy-MM-dd')}
-                    className={`
-                        ${isSelected(room.uuid, day) ? 'bg-blue-500 text-white' : ''} 
-                        ${isToday(day) ? 'bg-blue-500 text-white' : ''} 
-                        ${isWeekend(day) ? 'bg-gray-200' : ''}
-                        ${isBooked(room.uuid, day) ? 'bg-red-500 text-white' : ''}
-                    `}
-                    onMouseDown={() => !isBooked(room.uuid, day) && handleMouseDown(room.uuid, day)}
-                    onMouseEnter={() => handleMouseEnter(room.uuid, day)}
-                  >
-                    {room.base_price} ₽
+      <div className="relative">
+        <div ref={scrollRef} onMouseUp={handleMouseUp}>
+          <Table ref={containerRef}>
+            <BookingTableHeader interval={daysInRange} />
+            <TableBody>
+              {apartments.map((room) => (
+                <TableRow key={room.uuid}>
+                  <TableCell className="sticky left-0 z-20 w-[200px] min-w-[200px] bg-white dark:bg-gray-800 border-r shadow-[1px_0_0_0_rgba(0,0,0,0.1)]">
+                    <div className="p-2">{room.number}</div>
                   </TableCell>
-                ))}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+                  {daysInRange.map((day) => (
+                    <TableCell
+                      key={format(day, 'yyyy-MM-dd')}
+                      className={`
+                          ${isSelected(room.uuid, day) ? 'bg-blue-500 text-white' : ''} 
+                          ${isToday(day) ? 'bg-blue-500 text-white' : ''} 
+                          ${isWeekend(day) ? 'bg-gray-200' : ''}
+                          ${isBooked(room.uuid, day) ? 'bg-red-500 text-white' : ''}
+                      `}
+                      onMouseDown={() => !isBooked(room.uuid, day) && handleMouseDown(room.uuid, day)}
+                      onMouseEnter={() => handleMouseEnter(room.uuid, day)}
+                    >
+                      {room.base_price} ₽
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       </div>
 
       <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-        <SheetContent>
+        <SheetContent side="right" className="absolute right-0">
           <SheetHeader>
             <SheetTitle>Создание бронирования</SheetTitle>
           </SheetHeader>

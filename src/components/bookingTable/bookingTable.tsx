@@ -45,7 +45,7 @@ function BookingTable({ apartments, bookings, onBookingCreate, onSelectionChange
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const containerRef = useRef<HTMLTableElement>(null);
   const scrollRef = useHorizontalScroll(containerRef);
-  const [bookingSelection, setBookingSelection] = useState<BookingSelection | null>(null);
+  const [bookingSelection, setBookingSelection] = useState<BookingSelection[] | null>(null);
 
   const [dateRange, setDateRange] = useState(() => {
     const today = defaultDateLib.today();
@@ -64,27 +64,61 @@ function BookingTable({ apartments, bookings, onBookingCreate, onSelectionChange
   const handleMouseDown = (apartmentId: string, date: Date) => {
     setIsSelecting(true);
     const newSelection: Selection = {
-      apartmentUUIDs: [...(selection?.apartmentUUIDs || []), apartmentId],
-      startDate: selection?.startDate || date,
+      apartmentUUIDs: [apartmentId],
+      startDate: date,
       endDate: date,
     };
     setSelection(newSelection);
-    setBookingSelection({
-      rooms: newSelection.apartmentUUIDs,
-      arrival_date: newSelection.startDate,
-      departure_date: newSelection.endDate,
-    });
+    
+    // Создаем массив с одним элементом BookingSelection
+    setBookingSelection([{
+      rooms: [apartmentId],
+      arrival_date: date,
+      departure_date: date,
+    }]);
   };
 
   // Обработчик наведения на день
   const handleMouseEnter = (apartmentId: string, date: Date) => {
     if (isSelecting && selection !== null) {
-      const newSelection: Selection = {
-        apartmentUUIDs: [...(selection.apartmentUUIDs || []), apartmentId],
-        startDate: selection.startDate || date,
-        endDate: date,
-      };
-      setSelection(newSelection);
+      // Проверяем, есть ли уже этот apartmentId в массиве
+      if (!selection.apartmentUUIDs.includes(apartmentId)) {
+        // Добавляем новый apartmentId в массив
+        const newApartmentUUIDs = [...selection.apartmentUUIDs, apartmentId];
+        
+        const newSelection: Selection = {
+          apartmentUUIDs: newApartmentUUIDs,
+          startDate: selection.startDate,
+          endDate: selection.endDate, // Используем ту же дату окончания
+        };
+        setSelection(newSelection);
+        
+        // Обновляем массив BookingSelection для всех выбранных номеров
+        // с одинаковым диапазоном дат
+        const newBookingSelections = newApartmentUUIDs.map(roomId => ({
+          rooms: [roomId],
+          arrival_date: selection.startDate,
+          departure_date: selection.endDate,
+        }));
+        
+        setBookingSelection(newBookingSelections);
+      } else if (date !== selection.endDate) {
+        // Если apartmentId уже есть, но дата изменилась, обновляем дату окончания
+        const newSelection: Selection = {
+          ...selection,
+          endDate: date,
+        };
+        setSelection(newSelection);
+        
+        // Обновляем массив BookingSelection с новой датой окончания
+        const newBookingSelections = selection.apartmentUUIDs.map(roomId => ({
+          rooms: [roomId],
+          arrival_date: selection.startDate,
+          departure_date: date,
+        }));
+        
+        setBookingSelection(newBookingSelections);
+      }
     }
   };
 
@@ -112,23 +146,34 @@ function BookingTable({ apartments, bookings, onBookingCreate, onSelectionChange
     setIsSelecting(false);
   };
 
-  const handleBookingSubmit = async (formData: BookingFormData & BookingSelection) => {
+  const handleBookingSubmit = async (formData: BookingFormData & { selections: BookingSelection[] }) => {
     try {
       console.log('Отправка данных бронирования:', formData);
-      const newBooking: Booking = {
-        uuid: formData.rooms,
-        create_date: new Date(),
-        update_date: new Date(),
-        room_uuid: formData.rooms[0],
-        start_date: formData.arrival_date,
-        end_date: formData.departure_date,
-        guest_name: `${formData.client_name} ${formData.client_surname}`,
-        guest_phone: formData.phone || '',
-        guest_email: formData.email || '',
-        status: BookingStatus.PENDING,
-        };
+      
+      // Создаем массив для хранения новых бронирований
+      const newBookings: Booking[] = [];
+      
+      // Для каждого выбранного номера создаем бронирование
+      formData.selections.forEach(selection => {
+        selection.rooms.forEach(roomId => {
+          newBookings.push({
+            uuid: crypto.randomUUID(),
+            create_date: new Date(),
+            update_date: new Date(),
+            room_uuid: roomId,
+            start_date: selection.arrival_date,
+            end_date: selection.departure_date,
+            guest_name: `${formData.client_name} ${formData.client_surname || ''}`,
+            guest_phone: formData.phone || '',
+            guest_email: formData.email || '',
+            status: BookingStatus.PENDING,
+          });
+        });
+      });
 
-      onBookingCreate(newBooking);
+      // Отправляем каждое новое бронирование
+      newBookings.forEach(newBooking => onBookingCreate(newBooking));
+      
       handleSheetClose();
     } catch (error) {
       console.error('Ошибка при создании бронирования:', error);

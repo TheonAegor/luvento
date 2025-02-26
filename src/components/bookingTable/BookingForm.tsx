@@ -15,9 +15,9 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
 interface BookingSliderProps {
-  selection: BookingSelection[] | null;
+  selection: BookingSelection | null;
   onClose: () => void;
-  onSubmit: (data: BookingFormData & { selections: BookingSelection[] }) => void;
+  onSubmit: (data: BookingFormData & BookingSelection) => void;
 }
 
 // Define the validation schema using Zod
@@ -58,26 +58,40 @@ const BookingForm: React.FC<BookingSliderProps> = ({ selection, onClose, onSubmi
     },
   });
 
-  if (selection === null || selection.length === 0) return null;
+  if (selection === null) return null;
 
   // Handle form submission
   const handleSubmit = (data: BookingFormData) => {
+    console.log('BookingForm handleSubmit вызван', data, selection);
+    
+    // Предотвращаем отправку формы, если selection равен null
+    if (!selection) {
+      console.error('Ошибка: selection равен null');
+      return;
+    }
+    
+    // Вызываем onSubmit с объединенными данными
     onSubmit({
       ...data,
-      selections: selection,
+      ...selection,
     });
+    
+    // Явно вызываем onClose для закрытия формы
+    console.log('Вызываем onClose после отправки формы');
+    onClose();
   };
 
   return (
     <div className="inset-0 flex items-center justify-center">
       <div className="bg-white p-6 rounded-lg max-w-md w-full">
-        <h2 className="text-xl font-bold mb-4">
-          {selection.length > 1 
-            ? `Бронирование ${selection.length} ячеек` 
-            : 'Новое бронирование'}
-        </h2>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+          <form 
+            onSubmit={(e) => {
+              console.log('Form onSubmit вызван');
+              form.handleSubmit(handleSubmit)(e);
+            }} 
+            className="space-y-4"
+          >
             <FormField
               control={form.control}
               name="client_name"
@@ -168,14 +182,11 @@ const BookingForm: React.FC<BookingSliderProps> = ({ selection, onClose, onSubmi
                 </FormItem>
               )}
             />
-            <div className="flex justify-end space-x-2">
-              <Button type="submit" variant="default">
+              <Button 
+                type="submit" 
+              >
                 Создать бронирование
               </Button>
-              <Button type="button" variant="outline" onClick={onClose}>
-                Закрыть
-              </Button>
-            </div>
           </form>
         </Form>
       </div>

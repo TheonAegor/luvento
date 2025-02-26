@@ -21,7 +21,7 @@ export interface BookingSelection {
 }
 
 export interface Booking {
-    uuid: string[];
+    uuid: string;
     room_uuid: string;
     start_date: Date;
     end_date: Date;

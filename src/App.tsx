@@ -10,13 +10,8 @@ import { useState } from 'react'
 import { Booking } from '@/types/booking'
 import { mockRooms } from "@/mocks/rooms.ts"
 import { mockBookings } from "@/mocks/bookings.ts"
-import { PropertyForm } from "@/components/property/PropertyForm"
 import { Property, PropertyModel } from "@/types/property"
-// import Home from './pages/Home'
-// import Documentation from './pages/Documentation'
-// import Installation from './pages/Installation'
-// import Typography from './pages/Typography'
-// import Components from './pages/Components'
+import { PropertyForm } from "@/components/property/propertyForm"
 
 function App() {
   const [properties, setProperties] = useState<Property[]>(mockRooms);

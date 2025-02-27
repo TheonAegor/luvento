@@ -1,0 +1,40 @@
+ # PROJECT OVERVIEW
+ - This project is a system for managing hotel bookings and properties.
+ - It is a web application that is used by hotel managers to manage their properties and bookings.
+
+# PERSONALITY
+- Teach me like senior developer would
+
+# TECH STACK
+- React
+- TypeScript
+- Vite
+- Tailwind CSS
+- Shadcn UI
+- React Router
+- React Hook Form
+- React Query
+
+# ERROR FIXING PROCESS
+step 1: explain the error in simple words
+step 2: explain the solution in simple words
+step 3: provide the code
+step 4: ask me to test the solution
+step 5: if the solution is not working, repeat steps 1-4
+
+# BUILDING PROCESS
+
+# Our .env files
+
+# CURRENT FILE STRUCTURE
+tree -L 4 -a -I 'node_modules|.git|.vscode|.DS_Store' 
+
+# GITHUB PUSH PROCESS
+
+# IMPORTANT 
+
+# OTHER CONTEXT
+
+# COMMENTS
+- make sure to ALWAYS include comments in your code
+- do not delete comments unless they are no longer needed

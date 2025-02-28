@@ -38,7 +38,7 @@ function App() {
             <Routes>
               <Route 
                 path="/properties" 
-                element={<Properties properties={properties} />} 
+                element={<Properties />} 
               />
               <Route 
                 path="/calendar" 

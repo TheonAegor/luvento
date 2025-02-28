@@ -1,0 +1,505 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Short-Term Rental Management API",
+    "description": "API для системы управления посуточной арендой с синхронизацией календаря и интеграциями.",
+    "version": "1.0.0",
+    "contact": {
+      "email": "support@example.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8081",
+      "description": "Local development server"
+    },
+    {
+      "url": "https://luvento.taegor.tech",
+      "description": "Dev server"
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "Проверка здоровья сервиса",
+        "tags": ["Public"],
+        "operationId": "Public_Health",
+        "responses": {
+          "200": {
+            "description": "Успешный ответ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/properties": {
+      "get": {
+        "summary": "Получение списка объектов",
+        "tags": ["PropertyService"],
+        "operationId": "PropertyService_ListProperties",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pagination.limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "pagination.offset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Успешный ответ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListPropertiesResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Создание объекта",
+        "tags": ["PropertyService"],
+        "operationId": "PropertyService_CreateProperty",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePropertyRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Успешный ответ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Property"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/bookings": {
+      "get": {
+        "summary": "Получение списка бронирований",
+        "tags": ["BookingService"],
+        "operationId": "BookingService_ListBookings",
+        "parameters": [
+          {
+            "name": "property_id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "start_date",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Успешный ответ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListBookingsResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Создание бронирования",
+        "tags": ["BookingService"],
+        "operationId": "BookingService_CreateBooking",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBookingRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Успешный ответ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Booking"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sync/listings": {
+      "post": {
+        "summary": "Синхронизация объявлений и бронирований",
+        "tags": ["SyncService"],
+        "operationId": "SyncService_SyncListings",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SyncListingsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Успешный ответ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncListingsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "HealthResponse": {
+        "type": "object",
+        "properties": {
+          "postgres": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "boolean"
+              },
+              "error": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "Property": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "country": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "city": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "address": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "geo_data": {
+            "type": "object"
+          },
+          "source_id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "rating": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "base_price": {
+            "type": "number",
+            "format": "double"
+          },
+          "type": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "number": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "floor": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "description": {
+            "type": "string"
+          },
+          "create_date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "update_date": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "CreatePropertyRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "country": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "city": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "address": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "geo_data": {
+            "type": "object"
+          },
+          "source_id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "base_price": {
+            "type": "number",
+            "format": "double"
+          },
+          "type": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "number": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "floor": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      },
+      "ListPropertiesResponse": {
+        "type": "object",
+        "properties": {
+          "properties": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Property"
+            }
+          },
+          "total": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "Booking": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string"
+          },
+          "client_name": {
+            "type": "string"
+          },
+          "client_surname": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "adults": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "children": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "property_uuid": {
+            "type": "string"
+          },
+          "tariff": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "status_id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "services": {
+            "type": "object"
+          },
+          "payment": {
+            "type": "number",
+            "format": "double"
+          },
+          "price_per": {
+            "type": "number",
+            "format": "double"
+          },
+          "amount_total": {
+            "type": "number",
+            "format": "double"
+          },
+          "is_hourly": {
+            "type": "boolean"
+          },
+          "arrival_date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "departure_date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "source_id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "external_booking_id": {
+            "type": "string"
+          },
+          "is_manual": {
+            "type": "boolean"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "create_date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "update_date": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "CreateBookingRequest": {
+        "type": "object",
+        "properties": {
+          "booking": {
+            "$ref": "#/components/schemas/Booking"
+          }
+        }
+      },
+      "ListBookingsResponse": {
+        "type": "object",
+        "properties": {
+          "bookings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Booking"
+            }
+          }
+        }
+      },
+      "SyncListingsRequest": {
+        "type": "object",
+        "properties": {
+          "source_id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "user_id": {
+            "type": "string"
+          }
+        }
+      },
+      "SyncListingsResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["UNKNOWN", "SUCCESS", "PARTIAL", "FAILED"]
+          },
+          "message": {
+            "type": "string"
+          },
+          "updated_listings": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "updated_bookings": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      }
+    }
+  }
+}

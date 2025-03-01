@@ -2,9 +2,7 @@
 import { useProperties } from "@/api/apiHooks";
 
 function Properties() {
-  const { data, isLoading, error } = useProperties({
-    pagination: { limit: 10, offset: 0 }
-  });
+  const { data, isLoading, error } = useProperties();
 
 
   return (
